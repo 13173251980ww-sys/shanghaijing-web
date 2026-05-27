@@ -13,6 +13,7 @@ import projectsRouter from './routes/projects.js';
 import uploadRouter from './routes/upload.js';
 import chatRouter from './routes/chat.js';
 import musicRouter from './routes/music.js';
+import neteaseRouter from './routes/netease.js';
 import errorHandler from './middlewares/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -51,6 +52,7 @@ app.use('/api/admin/projects', projectsRouter);
 app.use('/api/admin/chat', chatRouter);
 app.use('/api/music', musicRouter);
 app.use('/api/admin/music', musicRouter);
+app.use('/api/admin/netease', neteaseRouter);
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'api' });

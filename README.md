@@ -204,4 +204,5 @@ pm2 save
 - 视觉素材由 AI 生成（image-2）
 - 代码由 Claude Code AI 辅助编写
 - Live2D wanko 模型来自社区开源项目
+- 网易云音乐集成使用 [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)（MIT 协议）
 - 灵感源自《山海经》—— 一部记录上古奇兽的中国神话典籍

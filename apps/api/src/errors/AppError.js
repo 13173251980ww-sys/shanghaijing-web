@@ -34,6 +34,11 @@ export const ERRORS = {
   // ---- 聊天 (B0004) ----
   CHAT_MESSAGE_REQUIRED:   { code: 'B0004', status: 400, label: '消息不能为空',         message: '消息不能为空' },
 
+  // ---- 网易云音乐 (B0005) ----
+  NETEASE_NOT_LOGGED_IN:   { code: 'B0005', status: 400, label: '未登录网易云',         message: '请先扫码登录网易云音乐' },
+  NETEASE_API_ERROR:       { code: 'B0005', status: 502, label: '网易云API调用失败',    message: '网易云音乐服务暂时不可用' },
+  NETEASE_QR_EXPIRED:      { code: 'B0005', status: 400, label: '二维码已过期',         message: '二维码已过期，请刷新重试' },
+
   // ---- 服务端 (C) ----
   INTERNAL:                { code: 'C0001', status: 500, label: '服务器内部错误',       message: '服务器内部错误' },
   CHAT_LLM_ERROR:          { code: 'C0002', status: 502, label: 'AI 服务调用失败',      message: 'AI 服务暂时不可用，请稍后重试' },

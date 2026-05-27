@@ -3,6 +3,91 @@
     <h2 class="page-wrap__title">音乐管理</h2>
     <p class="page-wrap__desc">管理"山海乐坊"音乐列表，支持本地路径或外部音频 URL</p>
 
+    <!-- ── 网易云音乐 ── -->
+    <section class="netease-section">
+      <h3 class="netease-section__title">网易云音乐</h3>
+      <div class="netease-section__body">
+        <!-- 未登录 -->
+        <div v-if="!netease.isLoggedIn" class="netease-login-row">
+          <span class="netease-login-row__hint">登录后可导入收藏歌曲</span>
+          <button class="btn btn--primary btn--sm" :disabled="netease.isQrLoading" @click="netease.startQrLogin()">
+            {{ netease.isQrLoading ? '生成中…' : '扫码登录网易云' }}
+          </button>
+        </div>
+        <!-- 已登录 -->
+        <div v-else class="netease-loggedin">
+          <div class="netease-loggedin__info">
+            <img v-if="netease.profile && netease.profile.avatarUrl" :src="netease.profile.avatarUrl" class="netease-avatar" alt="" />
+            <span class="netease-loggedin__name">{{ netease.profile && netease.profile.nickname || '已登录' }}</span>
+          </div>
+          <button class="btn btn--sm" @click="netease.doLogout()">退出登录</button>
+        </div>
+      </div>
+
+      <!-- 歌单浏览器（已登录后显示） -->
+      <div v-if="netease.isLoggedIn" class="netease-browser">
+        <div class="netease-tabs">
+          <button
+            class="netease-tabs__tab"
+            :class="{ 'netease-tabs__tab--active': netease.activeTab === 'liked' }"
+            @click="netease.showLiked()"
+          >我喜欢的音乐</button>
+          <button
+            v-for="pl in netease.playlists"
+            :key="pl.id"
+            class="netease-tabs__tab"
+            :class="{ 'netease-tabs__tab--active': netease.activeTab === 'playlist' && netease.currentSongs.length && netease.playlists.find(p => p.id === pl.id && netease.activeTab === 'playlist') }"
+            :title="`${pl.name} (${pl.trackCount}首)`"
+            @click="netease.browsePlaylist(pl.id)"
+          >{{ pl.name }}</button>
+        </div>
+
+        <!-- 勾选操作栏 -->
+        <div class="netease-toolbar" v-if="netease.activeTab === 'liked' || netease.currentSongs.length">
+          <label class="netease-select-all">
+            <input type="checkbox" :checked="netease.selectedIds.size > 0 && netease.selectedIds.size === (netease.activeTab === 'liked' ? netease.likelistSongs.length : netease.currentSongs.length)" @change="netease.selectAll()" />
+            <span>全选</span>
+          </label>
+          <button class="btn btn--primary btn--sm" :disabled="netease.selectedIds.size === 0 || netease.isLoading" @click="netease.doImport()">
+            {{ netease.isLoading ? '导入中…' : `导入选中 (${netease.selectedCount})` }}
+          </button>
+        </div>
+
+        <!-- 歌曲列表 -->
+        <div class="netease-song-list" v-if="netease.activeTab === 'liked' || netease.currentSongs.length">
+          <div
+            v-for="s in netease.activeTab === 'liked' ? netease.likelistSongs : netease.currentSongs"
+            :key="s.id"
+            class="netease-song-row"
+            :class="{ 'netease-song-row--selected': netease.selectedIds.has(s.id) }"
+          >
+            <input type="checkbox" class="netease-song-row__check" :checked="netease.selectedIds.has(s.id)" @change="netease.toggleSong(s.id)" />
+            <img v-if="s.cover" :src="s.cover" class="netease-song-row__cover" alt="" />
+            <span class="netease-song-row__cover-ph" v-else />
+            <span class="netease-song-row__title">{{ s.title }}</span>
+            <span class="netease-song-row__artist">{{ s.artist }}</span>
+          </div>
+        </div>
+        <p v-if="netease.isLoading" class="netease-loading">加载中…</p>
+      </div>
+    </section>
+
+    <!-- QR 登录弹窗 -->
+    <div v-if="netease.showQrModal" class="modal-overlay" @click.self="netease.closeQrModal()">
+      <div class="modal-box qr-modal">
+        <h3 class="modal-box__title">扫码登录网易云音乐</h3>
+        <div class="qr-modal__img-wrap">
+          <img v-if="netease.qrDataUrl" :src="netease.qrDataUrl" class="qr-modal__img" alt="QR码" />
+          <span v-else class="qr-modal__placeholder">生成中…</span>
+        </div>
+        <p class="qr-modal__status">{{ netease.qrStatusText }}</p>
+        <div class="modal-box__actions">
+          <button class="btn" @click="netease.closeQrModal()">取消</button>
+          <button v-if="netease.qrStatusText.includes('过期')" class="btn btn--primary" @click="netease.startQrLogin()">刷新二维码</button>
+        </div>
+      </div>
+    </div>
+
     <form class="crud-form" @submit.prevent="handleAdd">
       <div class="crud-form__fields">
         <input v-model="form.title" class="field__input" placeholder="歌曲名" />
@@ -54,8 +139,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { getMusic, addMusic, updateMusic, deleteMusic } from '@/services/api/music.js';
+import { useNeteaseStore } from '@/admin/store/netease.js';
+
+const netease = useNeteaseStore();
 
 const songs = ref([]);
 const editing = ref(null);
@@ -94,7 +182,8 @@ function handleDelete(id) {
   deleteMusic(id, () => load(), () => {});
 }
 
-onMounted(load);
+onMounted(() => { load(); netease.checkStatus(); });
+onUnmounted(() => { netease.stopPolling(); });
 </script>
 
 <style scoped>
@@ -113,6 +202,233 @@ onMounted(load);
   color: rgba(58, 47, 40, 0.45);
   margin: 0 0 28px;
   letter-spacing: 0.04em;
+}
+
+/* ── 网易云音乐 ── */
+.netease-section {
+  margin-bottom: 28px;
+  padding: 16px;
+  background: rgba(245, 240, 232, 0.4);
+  border: 1px solid rgba(58, 47, 40, 0.08);
+  border-radius: 8px;
+}
+
+.netease-section__title {
+  font-family: var(--font-ink);
+  font-size: 16px;
+  font-weight: 600;
+  color: #3a2f28;
+  margin: 0 0 12px;
+  letter-spacing: 0.05em;
+}
+
+.netease-section__body {
+  margin-bottom: 12px;
+}
+
+.netease-login-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.netease-login-row__hint {
+  font-family: var(--font-ink);
+  font-size: 13px;
+  color: rgba(58, 47, 40, 0.4);
+}
+
+.netease-loggedin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.netease-loggedin__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.netease-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(58, 47, 40, 0.1);
+}
+
+.netease-loggedin__name {
+  font-family: var(--font-ink);
+  font-size: 14px;
+  color: #3a2f28;
+  font-weight: 500;
+}
+
+.netease-browser {
+  border-top: 1px solid rgba(58, 47, 40, 0.06);
+  padding-top: 12px;
+}
+
+.netease-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.netease-tabs__tab {
+  font-family: var(--font-ink);
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(58, 47, 40, 0.1);
+  background: transparent;
+  color: rgba(58, 47, 40, 0.5);
+  cursor: pointer;
+  transition: all 0.2s;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.netease-tabs__tab:hover { color: #3a2f28; border-color: rgba(58, 47, 40, 0.2); }
+
+.netease-tabs__tab--active {
+  color: #C41E1E;
+  border-color: rgba(196, 30, 30, 0.25);
+  background: rgba(196, 30, 30, 0.04);
+}
+
+.netease-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.netease-select-all {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-ink);
+  font-size: 12px;
+  color: rgba(58, 47, 40, 0.5);
+  cursor: pointer;
+}
+
+.netease-select-all input { cursor: pointer; }
+
+.netease-song-list {
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.netease-song-list::-webkit-scrollbar { width: 3px; }
+.netease-song-list::-webkit-scrollbar-track { background: transparent; }
+.netease-song-list::-webkit-scrollbar-thumb { background: rgba(58, 47, 40, 0.1); border-radius: 2px; }
+
+.netease-song-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.netease-song-row:hover { background: rgba(245, 240, 232, 0.6); }
+
+.netease-song-row--selected { background: rgba(196, 30, 30, 0.04); }
+
+.netease-song-row__check { flex-shrink: 0; cursor: pointer; }
+
+.netease-song-row__cover {
+  width: 32px;
+  height: 32px;
+  border-radius: 3px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(58, 47, 40, 0.06);
+}
+
+.netease-song-row__cover-ph {
+  width: 32px;
+  height: 32px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #e8ddd0, #f0e8db);
+  border: 1px solid rgba(58, 47, 40, 0.06);
+}
+
+.netease-song-row__title {
+  font-family: var(--font-ink);
+  font-size: 12px;
+  color: #3a2f28;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.netease-song-row__artist {
+  font-family: var(--font-ink);
+  font-size: 11px;
+  color: rgba(58, 47, 40, 0.35);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.netease-loading {
+  font-family: var(--font-ink);
+  font-size: 12px;
+  color: rgba(58, 47, 40, 0.35);
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* ── QR 弹窗 ── */
+.qr-modal {
+  text-align: center;
+}
+
+.qr-modal__img-wrap {
+  margin: 12px auto;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid rgba(58, 47, 40, 0.08);
+  border-radius: 6px;
+}
+
+.qr-modal__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.qr-modal__placeholder {
+  font-family: var(--font-ink);
+  font-size: 13px;
+  color: rgba(58, 47, 40, 0.3);
+}
+
+.qr-modal__status {
+  font-family: var(--font-ink);
+  font-size: 13px;
+  color: rgba(58, 47, 40, 0.5);
+  margin: 8px 0 12px;
 }
 
 .crud-form {
