@@ -1,6 +1,26 @@
 <template>
   <router-view />
+  <CloudTransition ref="cloudRef" />
 </template>
+
+<script setup>
+import { ref, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import CloudTransition from './components/CloudTransition.vue';
+
+const router = useRouter();
+const cloudRef = ref(null);
+
+router.beforeEach(async (to, from) => {
+  if (!from.name) return; // 首次加载不触发
+  await cloudRef.value?.cover();
+});
+
+router.afterEach(async () => {
+  await nextTick();
+  await cloudRef.value?.reveal();
+});
+</script>
 
 <style>
 body {
