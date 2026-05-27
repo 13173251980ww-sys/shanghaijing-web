@@ -1,6 +1,6 @@
 /**
  * Chat Service — AI 对话业务逻辑
- * 注：本文件使用 async generator，是项目中唯一使用 async 的地方（SSE 流式传输需要）
+ * 注：本文件导出 prepareChat 做请求准备，fetch 调用在 route 层完成（SSE 兼容性要求）
  */
 import { BadRequestError } from '../errors/AppError.js';
 import { getAffection, getAffectionLevel } from '../data/repositories/affection.js';
@@ -36,7 +36,7 @@ export function detectEmotion(text) {
   return 'neutral';
 }
 
-export async function* streamChat(message, sessionId, history = []) {
+export function prepareChat(message) {
   if (!message || !message.trim()) {
     throw new BadRequestError('CHAT_MESSAGE_REQUIRED');
   }
@@ -52,69 +52,5 @@ export async function* streamChat(message, sessionId, history = []) {
   const { title } = getAffectionLevel(affection);
   const affectionPrompt = `\n当前好感度：你与来客的好感度为「${title}」（${affection}点）。请根据好感度调整语气亲疏。`;
 
-  const historyMessages = history.map(m => ({ role: m.role, content: m.content }));
-
-  const body = {
-    model,
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT + affectionPrompt },
-      ...historyMessages,
-      { role: 'user', content: message },
-    ],
-    stream: true,
-  };
-
-  let response;
-  try {
-    response = await fetch(DEEPSEEK_BASE, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    throw new BadRequestError('CHAT_LLM_ERROR');
-  }
-
-  if (!response.ok) {
-    throw new BadRequestError('CHAT_LLM_ERROR');
-  }
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = '';
-  let fullText = '';
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split('\n');
-    buffer = lines.pop() || '';
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-      const dataStr = trimmed.slice(6);
-      if (dataStr === '[DONE]') {
-        yield { text: fullText, emotion: detectEmotion(fullText), done: true };
-        return;
-      }
-
-      let json;
-      try { json = JSON.parse(dataStr); } catch { continue; }
-
-      const delta = json.choices?.[0]?.delta?.content;
-      if (delta) {
-        fullText += delta;
-        yield { text: fullText, emotion: detectEmotion(delta), done: false };
-      }
-    }
-  }
-
-  yield { text: fullText, emotion: detectEmotion(fullText), done: true };
+  return { apiKey, model, systemPrompt: SYSTEM_PROMPT + affectionPrompt };
 }
