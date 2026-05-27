@@ -12,7 +12,7 @@
         <span class="header__link-ink" aria-hidden="true" />
       </router-link>
     </nav>
-    <button class="header__menu" aria-label="菜单">
+    <button class="header__menu" aria-label="菜单" @click="goAdmin">
       <svg viewBox="0 0 24 24" fill="none" class="header__menu-icon">
         <path d="M5 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         <path d="M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -23,10 +23,25 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+
 defineProps({
   activePage: { type: String, default: 'map' },
   light: { type: Boolean, default: false },
 });
+
+const router = useRouter();
+
+const TOKEN_KEY = 'admin_token';
+
+function goAdmin() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    router.push('/admin');
+  } else {
+    router.push('/admin/login');
+  }
+}
 
 const navItems = [
   { key: 'map', label: '首页', path: '/' },
@@ -40,8 +55,6 @@ const navItems = [
 </script>
 
 <style scoped>
-/* Ink wash painting (水墨画) style navigation */
-
 .header {
   position: relative;
   display: flex;
@@ -70,20 +83,11 @@ const navItems = [
   transition: color 0.35s ease;
 }
 
-.header__link:hover {
-  color: #8b5a2b;
-}
+.header__link:hover { color: #8b5a2b; }
 
-/* Light mode — text sits on dark background images */
-.header--light .header__link {
-  color: #f0e6d2;
-}
+.header--light .header__link { color: #f0e6d2; }
+.header--light .header__link:hover { color: #fff; }
 
-.header--light .header__link:hover {
-  color: #fff;
-}
-
-/* Active ink brush underline */
 .header__link-ink {
   position: absolute;
   bottom: -4px;
@@ -91,29 +95,15 @@ const navItems = [
   width: 90%;
   height: 2px;
   border-radius: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    #C41E1E 15%,
-    #C41E1E 85%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg, transparent 0%, #C41E1E 15%, #C41E1E 85%, transparent 100%);
   opacity: 0;
   transform: scaleX(0);
   transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
-.header__link--active .header__link-ink {
-  opacity: 1;
-  transform: scaleX(1);
-}
+.header__link--active .header__link-ink { opacity: 1; transform: scaleX(1); }
+.header__link--active { color: #C41E1E !important; }
 
-/* Active text turns vermillion red like a seal stamp */
-.header__link--active {
-  color: #C41E1E !important;
-}
-
-/* Hamburger menu — thin ink lines */
 .header__menu {
   position: absolute;
   right: 0;
@@ -131,20 +121,9 @@ const navItems = [
   transition: color 0.35s ease;
 }
 
-.header__menu:hover {
-  color: #8b5a2b;
-}
+.header__menu:hover { color: #8b5a2b; }
+.header--light .header__menu { color: #f0e6d2; }
+.header--light .header__menu:hover { color: #fff; }
 
-.header--light .header__menu {
-  color: #f0e6d2;
-}
-
-.header--light .header__menu:hover {
-  color: #fff;
-}
-
-.header__menu-icon {
-  width: 100%;
-  height: 100%;
-}
+.header__menu-icon { width: 100%; height: 100%; }
 </style>

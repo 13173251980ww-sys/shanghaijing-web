@@ -24,20 +24,26 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
-import bg from '../assets/images/friends-bg.png';
-import mapIcon from '../assets/images/map-icon.png';
+import bg from '../../assets/images/friends-bg.png';
+import mapIcon from '../../assets/images/map-icon.png';
+import { getFriends } from '@/services/api/friends.js';
 
-const links = [
-  { name: '派大星工作室', url: '#' },
-];
+const links = ref([]);
+
+onMounted(() => {
+  getFriends(
+    (res) => { if (res.data && res.data.length) links.value = res.data; },
+    () => {},
+  );
+});
 </script>
 
 <style scoped>
 .page {
   position: fixed;
   inset: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,7 +74,6 @@ const links = [
   z-index: 10;
 }
 
-/* ── friend card ── */
 .friend-card {
   position: absolute;
   left: 4.51%;
@@ -135,11 +140,8 @@ const links = [
   transition: color 0.35s ease;
 }
 
-.friend-card:hover .friend-card__name {
-  color: #C41E1E;
-}
+.friend-card:hover .friend-card__name { color: #C41E1E; }
 
-/* ── map button ── */
 .map-btn {
   position: absolute;
   right: 3.19%;

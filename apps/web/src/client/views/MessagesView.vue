@@ -6,20 +6,22 @@
         <SiteHeader active-page="messages" />
       </div>
 
-      <!-- 留言板 -->
       <div class="board">
-        <!-- 留言展示区 -->
         <div class="board__messages">
-          <div class="board__empty">
+          <div v-if="messages.length === 0" class="board__empty">
             <span class="board__empty-icon" aria-hidden="true">&#x2009;</span>
             <p>尚无留言，不妨留下第一笔</p>
           </div>
+          <div v-else class="board__list">
+            <div v-for="m in messages" :key="m.id" class="board__msg">
+              <span class="board__msg-author">{{ m.author }}</span>
+              <p class="board__msg-content">{{ m.content }}</p>
+            </div>
+          </div>
         </div>
 
-        <!-- 笔触分割线 -->
         <hr class="board__rule" />
 
-        <!-- 输入区 -->
         <div class="board__input">
           <input
             v-model="author"
@@ -36,7 +38,9 @@
               maxlength="500"
               rows="1"
             />
-            <button class="board__submit" :disabled="!canSend" @click="send">寄</button>
+            <button class="board__submit" :disabled="!canSend || sending" @click="send">
+              {{ sending ? '…' : '寄' }}
+            </button>
           </div>
         </div>
       </div>
@@ -49,29 +53,46 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
-import bg from '../assets/images/messages-bg.png';
-import mapIcon from '../assets/images/map-icon.png';
+import bg from '../../assets/images/messages-bg.png';
+import mapIcon from '../../assets/images/map-icon.png';
+import { getMessages, addMessage } from '@/services/api/messages.js';
 
 const author = ref('');
 const content = ref('');
+const sending = ref(false);
+const messages = ref([]);
 
 const canSend = computed(() => content.value.trim().length > 0);
 
 function send() {
-  if (!canSend.value) return;
-  // TODO: connect to API
-  author.value = '';
-  content.value = '';
+  if (!canSend.value || sending.value) return;
+  sending.value = true;
+  addMessage(
+    { author: author.value.trim() || '匿名', content: content.value.trim() },
+    (res) => {
+      messages.value.unshift(res.data);
+      author.value = '';
+      content.value = '';
+      sending.value = false;
+    },
+    () => { sending.value = false; },
+  );
 }
+
+onMounted(() => {
+  getMessages(
+    (res) => { messages.value = res.data; },
+    () => {},
+  );
+});
 </script>
 
 <style scoped>
 .page {
   position: fixed;
   inset: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,7 +123,6 @@ function send() {
   z-index: 10;
 }
 
-/* ── board ── */
 .board {
   position: absolute;
   left: 7.92%;
@@ -113,7 +133,6 @@ function send() {
   flex-direction: column;
 }
 
-/* 卷轴卡纸背景 */
 .board::before {
   content: '';
   position: absolute;
@@ -127,7 +146,6 @@ function send() {
   pointer-events: none;
 }
 
-/* ── message list area ── */
 .board__messages {
   position: relative;
   flex: 1;
@@ -150,7 +168,30 @@ function send() {
   pointer-events: none;
 }
 
-/* ── brush-stroke divider ── */
+.board__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4%;
+}
+
+.board__msg {
+  font-family: var(--font-ink);
+}
+
+.board__msg-author {
+  font-size: 0.83cqi;
+  font-weight: 500;
+  color: #C41E1E;
+  margin-bottom: 1%;
+}
+
+.board__msg-content {
+  font-size: 0.97cqi;
+  color: #3a2f28;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .board__rule {
   position: relative;
   width: 100%;
@@ -167,7 +208,6 @@ function send() {
   );
 }
 
-/* ── input area ── */
 .board__input {
   position: relative;
   padding: 3% 5% 4%;
@@ -188,9 +228,7 @@ function send() {
   letter-spacing: 0.03em;
 }
 
-.board__field::placeholder {
-  color: rgba(58, 47, 40, 0.35);
-}
+.board__field::placeholder { color: rgba(58, 47, 40, 0.35); }
 
 .board__field--name {
   width: 40%;
@@ -199,9 +237,7 @@ function send() {
   transition: border-color 0.3s;
 }
 
-.board__field--name:focus {
-  border-bottom-color: rgba(58, 47, 40, 0.4);
-}
+.board__field--name:focus { border-bottom-color: rgba(58, 47, 40, 0.4); }
 
 .board__field-row {
   display: flex;
@@ -219,11 +255,8 @@ function send() {
   transition: border-color 0.3s;
 }
 
-.board__field--content:focus {
-  border-bottom-color: rgba(58, 47, 40, 0.4);
-}
+.board__field--content:focus { border-bottom-color: rgba(58, 47, 40, 0.4); }
 
-/* 寄字按钮 — 如朱砂印 */
 .board__submit {
   flex-shrink: 0;
   width: 4.5cqi;
@@ -243,18 +276,9 @@ function send() {
   line-height: 1;
 }
 
-.board__submit:hover:not(:disabled) {
-  background: #C41E1E;
-  color: #fff;
-  border-color: #C41E1E;
-}
+.board__submit:hover:not(:disabled) { background: #C41E1E; color: #fff; border-color: #C41E1E; }
+.board__submit:disabled { opacity: 0.25; cursor: default; }
 
-.board__submit:disabled {
-  opacity: 0.25;
-  cursor: default;
-}
-
-/* ── map button ── */
 .map-btn {
   position: absolute;
   right: 3.19%;

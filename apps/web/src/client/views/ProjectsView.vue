@@ -25,20 +25,26 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
-import bg from '../assets/images/projects-bg.png';
-import mapIcon from '../assets/images/map-icon.png';
+import bg from '../../assets/images/projects-bg.png';
+import mapIcon from '../../assets/images/map-icon.png';
+import { getProjects } from '@/services/api/projects.js';
 
-const projects = [
-  { name: 'Live2d面试官', desc: '智能虚拟面试官', url: '#' },
-];
+const projects = ref([]);
+
+onMounted(() => {
+  getProjects(
+    (res) => { if (res.data && res.data.length) projects.value = res.data; },
+    () => {},
+  );
+});
 </script>
 
 <style scoped>
 .page {
   position: fixed;
   inset: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,7 +75,6 @@ const projects = [
   z-index: 10;
 }
 
-/* ── project card ── */
 .project-card {
   position: absolute;
   left: 4.44%;
@@ -94,7 +99,6 @@ const projects = [
   box-shadow: 0 3px 14px rgba(58, 47, 40, 0.14);
 }
 
-/* icon */
 .project-card__icon {
   width: 4cqi;
   aspect-ratio: 1;
@@ -105,16 +109,13 @@ const projects = [
   transition: color 0.35s ease;
 }
 
-.project-card:hover .project-card__icon {
-  color: #C41E1E;
-}
+.project-card:hover .project-card__icon { color: #C41E1E; }
 
 .project-card__icon svg {
   width: 100%;
   height: 100%;
 }
 
-/* name */
 .project-card__name {
   font-family: var(--font-ink);
   font-size: 1.39cqi;
@@ -126,11 +127,8 @@ const projects = [
   transition: color 0.35s ease;
 }
 
-.project-card:hover .project-card__name {
-  color: #C41E1E;
-}
+.project-card:hover .project-card__name { color: #C41E1E; }
 
-/* desc */
 .project-card__desc {
   font-family: var(--font-ink);
   font-size: 0.97cqi;
@@ -140,7 +138,6 @@ const projects = [
   line-height: 1;
 }
 
-/* ── map button ── */
 .map-btn {
   position: absolute;
   right: 3.19%;

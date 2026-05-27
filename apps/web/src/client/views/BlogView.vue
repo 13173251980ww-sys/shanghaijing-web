@@ -6,29 +6,28 @@
         <SiteHeader active-page="blog" />
       </div>
 
-      <!-- 个人信息栏 — 固定吸附 -->
       <aside class="sidebar">
         <div class="sidebar__card">
-          <div class="sidebar__avatar" />
-          <h2 class="sidebar__name">Amadeus</h2>
-          <p class="sidebar__motto">笔落惊风雨，诗成泣鬼神</p>
+          <div class="sidebar__avatar" :style="avatarStyle" />
+          <h2 class="sidebar__name">{{ sidebar.name }}</h2>
+          <p class="sidebar__motto">{{ sidebar.motto }}</p>
           <hr class="sidebar__rule" />
           <h3 class="sidebar__section-title">近期文章</h3>
           <ul class="sidebar__articles">
-            <li v-for="a in articles.slice(0, 6)" :key="a.id">
+            <li v-for="a in posts.slice(0, 6)" :key="a.id">
               <a :href="a.url" class="sidebar__article-link">{{ a.title }}</a>
             </li>
           </ul>
-          <p class="sidebar__icp">ICP备案号：666666666666</p>
+          <p class="sidebar__icp">ICP备案号：{{ sidebar.icp }}</p>
         </div>
       </aside>
 
-      <!-- 文章列表 — 可滚动 -->
       <div class="article-scroll">
-        <article v-for="a in articles" :key="a.id" class="blog-card">
+        <article v-for="a in posts" :key="a.id" class="blog-card">
           <a :href="a.url" class="blog-card__link">
             <div class="blog-card__thumb">
-              <span class="blog-card__thumb-placeholder" aria-hidden="true">文</span>
+              <img v-if="a.coverUrl" :src="coverImg(a.coverUrl)" class="blog-card__thumb-img" alt="" />
+              <span v-else class="blog-card__thumb-placeholder" aria-hidden="true">文</span>
             </div>
             <div class="blog-card__body">
               <h3 class="blog-card__title">{{ a.title }}</h3>
@@ -47,35 +46,44 @@
 </template>
 
 <script setup>
+import { ref, reactive, computed, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
-import bg from '../assets/images/blog-bg.png';
-import mapIcon from '../assets/images/map-icon.png';
+import bg from '../../assets/images/blog-bg.png';
+import mapIcon from '../../assets/images/map-icon.png';
+import { getPosts, getSidebar } from '@/services/api/blog.js';
 
-const articles = [
-  { id: 1, title: '山海经异兽考', desc: '应龙、白泽与九尾狐的传说溯源', date: '2026-05-20', url: '#' },
-  { id: 2, title: '水墨渲染算法笔记', desc: '基于 WebGL 的实时水墨扩散模拟', date: '2026-05-15', url: '#' },
-  { id: 3, title: '前端动画性能优化', desc: '从 30fps 到 60fps 的逐帧分析', date: '2026-05-10', url: '#' },
-  { id: 4, title: '聊城大学游记', desc: '东昌湖畔的四年春秋', date: '2026-04-28', url: '#' },
-  { id: 5, title: 'Live2D 技术调研', desc: 'Cubism SDK 在 Web 端的集成方案', date: '2026-04-15', url: '#' },
-  { id: 6, title: '古诗词数据集构建', desc: '十万首唐诗宋词的清洗与标注', date: '2026-04-02', url: '#' },
-  { id: 7, title: 'Vue3 组合式 API 实践', desc: '从 Options 到 Composition 的迁移总结', date: '2026-03-20', url: '#' },
-  { id: 8, title: '个人网站开发手记', desc: '从设计到上线的全流程记录', date: '2026-03-10', url: '#' },
-  { id: 9, title: 'CSS Container Queries 入门', desc: '现代响应式布局的新范式', date: '2026-02-28', url: '#' },
-  { id: 10, title: 'JavaScript 闭包深入理解', desc: '从作用域链到内存管理的完整解析', date: '2026-02-15', url: '#' },
-  { id: 11, title: 'Web Worker 多线程实践', desc: '主线程卡顿的终极解决方案', date: '2026-02-01', url: '#' },
-  { id: 12, title: 'Canvas 实现粒子特效', desc: '从零搭建烟花粒子系统', date: '2026-01-18', url: '#' },
-  { id: 13, title: 'Git 工作流最佳实践', desc: '从 feature branch 到 CI/CD', date: '2026-01-05', url: '#' },
-  { id: 14, title: 'HTTP/3 与 QUIC 协议浅析', desc: '新一代传输协议的技术内幕', date: '2025-12-20', url: '#' },
-  { id: 15, title: 'TypeScript 类型体操入门', desc: '从泛型到条件类型的进阶之路', date: '2025-12-08', url: '#' },
-  { id: 16, title: '2025 年度技术总结', desc: '这一年的成长与收获', date: '2025-12-01', url: '#' },
-];
+const posts = ref([]);
+const sidebar = reactive({ name: 'Amadeus', motto: '笔落惊风雨，诗成泣鬼神', avatarUrl: '', icp: '666666666666' });
+
+const avatarStyle = computed(() => {
+  if (sidebar.avatarUrl) {
+    const url = sidebar.avatarUrl.startsWith('http') ? sidebar.avatarUrl : 'http://localhost:3000' + sidebar.avatarUrl;
+    return { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+  }
+  return {};
+});
+
+function coverImg(url) {
+  if (!url) return '';
+  return url.startsWith('http') ? url : 'http://localhost:3000' + url;
+}
+
+onMounted(() => {
+  getPosts(
+    (res) => { if (res.data && res.data.length) posts.value = res.data; },
+    () => {},
+  );
+  getSidebar(
+    (res) => { if (res.data) Object.assign(sidebar, res.data); },
+    () => {},
+  );
+});
 </script>
 
 <style scoped>
 .page {
   position: fixed;
   inset: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,7 +114,6 @@ const articles = [
   z-index: 10;
 }
 
-/* ── Sidebar — 固定吸附 ── */
 .sidebar {
   position: absolute;
   left: 2.92%;
@@ -200,9 +207,7 @@ const articles = [
   white-space: nowrap;
 }
 
-.sidebar__article-link:hover {
-  color: #C41E1E;
-}
+.sidebar__article-link:hover { color: #C41E1E; }
 
 .sidebar__icp {
   margin: 6% 0 0;
@@ -212,7 +217,6 @@ const articles = [
   flex-shrink: 0;
 }
 
-/* ── Article scroll area ── */
 .article-scroll {
   position: absolute;
   left: 24.86%;
@@ -234,10 +238,7 @@ const articles = [
   border-radius: 2px;
 }
 
-/* ── Blog card ── */
-.blog-card {
-  flex-shrink: 0;
-}
+.blog-card { flex-shrink: 0; }
 
 .blog-card__link {
   display: flex;
@@ -266,6 +267,13 @@ const articles = [
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.blog-card__thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .blog-card__thumb-placeholder {
@@ -298,9 +306,7 @@ const articles = [
   transition: color 0.35s ease;
 }
 
-.blog-card__link:hover .blog-card__title {
-  color: #C41E1E;
-}
+.blog-card__link:hover .blog-card__title { color: #C41E1E; }
 
 .blog-card__desc {
   font-family: var(--font-ink);
@@ -320,7 +326,6 @@ const articles = [
   line-height: 1;
 }
 
-/* ── map button ── */
 .map-btn {
   position: absolute;
   right: 3.19%;

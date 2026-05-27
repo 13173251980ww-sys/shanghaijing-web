@@ -7,42 +7,36 @@
       </div>
 
       <article class="profile">
-        <!-- 名帖 / name card -->
         <div class="profile__card">
-          <!-- 头像 & 姓名 -->
           <div class="profile__identity">
-            <div class="profile__avatar" />
+            <div class="profile__avatar" :style="avatarStyle" />
             <div class="profile__names">
-              <h2 class="profile__nickname">Amadeus</h2>
-              <p class="profile__school">聊城大学</p>
+              <h2 class="profile__nickname">{{ info.nickname }}</h2>
+              <p class="profile__school">{{ info.school }}</p>
             </div>
           </div>
 
-          <!-- 印章装饰 -->
           <span class="profile__seal" aria-hidden="true">印</span>
 
-          <!-- 分割线：笔触风格 -->
           <hr class="profile__rule" />
 
-          <!-- 技术 -->
           <section class="profile__section">
             <h3 class="profile__label">技术</h3>
             <ul class="profile__links">
-              <li>
-                <a href="https://github.com/13173251980ww-sys" target="_blank" rel="noopener">GitHub</a>
+              <li v-if="info.githubUrl">
+                <a :href="info.githubUrl" target="_blank" rel="noopener">GitHub</a>
               </li>
-              <li>
-                <a href="https://blog.csdn.net/amadeusCristina" target="_blank" rel="noopener">CSDN</a>
+              <li v-if="info.csdnUrl">
+                <a :href="info.csdnUrl" target="_blank" rel="noopener">CSDN</a>
               </li>
             </ul>
           </section>
 
           <hr class="profile__rule" />
 
-          <!-- 媒体 -->
           <section class="profile__section">
             <h3 class="profile__label">媒体</h3>
-            <p class="profile__social">B站 / QQ 1685736247</p>
+            <p class="profile__social">{{ info.social }}</p>
           </section>
         </div>
       </article>
@@ -55,17 +49,41 @@
 </template>
 
 <script setup>
+import { reactive, computed, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
-import bg from '../assets/images/about-bg.png';
-import mapIcon from '../assets/images/map-icon.png';
+import bg from '../../assets/images/about-bg.png';
+import mapIcon from '../../assets/images/map-icon.png';
+import { getAbout } from '@/services/api/about.js';
+
+const info = reactive({
+  nickname: 'Amadeus',
+  school: '聊城大学',
+  avatarUrl: '',
+  githubUrl: 'https://github.com/13173251980ww-sys',
+  csdnUrl: 'https://blog.csdn.net/amadeusCristina',
+  social: 'B站 / QQ 1685736247',
+});
+
+const avatarStyle = computed(() => {
+  if (info.avatarUrl) {
+    const url = info.avatarUrl.startsWith('http') ? info.avatarUrl : 'http://localhost:3000' + info.avatarUrl;
+    return { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+  }
+  return {};
+});
+
+onMounted(() => {
+  getAbout(
+    (res) => { if (res.data) Object.assign(info, res.data); },
+    () => {},
+  );
+});
 </script>
 
 <style scoped>
-/* ── page & scene ── */
 .page {
   position: fixed;
   inset: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,7 +114,6 @@ import mapIcon from '../assets/images/map-icon.png';
   z-index: 10;
 }
 
-/* ── profile card ── */
 .profile {
   position: absolute;
   left: 4.5%;
@@ -120,7 +137,6 @@ import mapIcon from '../assets/images/map-icon.png';
   overflow: hidden;
 }
 
-/* ── identity row ── */
 .profile__identity {
   display: flex;
   align-items: center;
@@ -160,7 +176,6 @@ import mapIcon from '../assets/images/map-icon.png';
   line-height: 1;
 }
 
-/* ── seal stamp ── */
 .profile__seal {
   position: absolute;
   top: 5%;
@@ -182,7 +197,6 @@ import mapIcon from '../assets/images/map-icon.png';
   font-family: var(--font-ink);
 }
 
-/* ── brush-stroke rule ── */
 .profile__rule {
   width: 100%;
   height: 1px;
@@ -198,7 +212,6 @@ import mapIcon from '../assets/images/map-icon.png';
   );
 }
 
-/* ── sections ── */
 .profile__section {
   display: flex;
   flex-direction: column;
@@ -242,7 +255,6 @@ import mapIcon from '../assets/images/map-icon.png';
   line-height: 1.5;
 }
 
-/* ── map button ── */
 .map-btn {
   position: absolute;
   right: 3.19%;

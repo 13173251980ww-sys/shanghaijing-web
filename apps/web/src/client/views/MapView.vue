@@ -10,13 +10,13 @@
 </template>
 
 <script setup>
-import bg from '../assets/images/map-bg.png';
-import yinglong from '../assets/images/creature-yinglong.png';
-import baize from '../assets/images/creature-baize.png';
-import kunpeng from '../assets/images/creature-kunpeng.png';
-import dangkang from '../assets/images/creature-dangkang.png';
-import taotie from '../assets/images/creature-taotie.png';
-import jiuweihu from '../assets/images/creature-jiuweihu.png';
+import bg from '../../assets/images/map-bg.png';
+import yinglong from '../../assets/images/creature-yinglong.png';
+import baize from '../../assets/images/creature-baize.png';
+import kunpeng from '../../assets/images/creature-kunpeng.png';
+import dangkang from '../../assets/images/creature-dangkang.png';
+import taotie from '../../assets/images/creature-taotie.png';
+import jiuweihu from '../../assets/images/creature-jiuweihu.png';
 
 const creatures = [
   { name: '应龙', img: yinglong, path: '/gallery', style: { left: '37.43%', top: '0.67%', width: '6.11%', height: '19.89%' } },
@@ -32,7 +32,6 @@ const creatures = [
 .page {
   position: fixed;
   inset: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
