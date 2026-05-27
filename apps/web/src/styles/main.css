@@ -1,62 +1,52 @@
 :root {
-  color-scheme: light;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f5f7fb;
-  color: #132238;
+  --radius-8: 8px;
+  --radius-16: 16px;
+  --radius-full: 9999px;
+
+  --color-glass-bg: rgba(255, 255, 255, 0.2);
+  --color-glass-border: rgba(255, 255, 255, 1);
+
+  --color-text-primary: #000;
+  --color-text-secondary: rgba(55, 65, 81, 0.8);
+  --color-text-muted: rgba(55, 65, 81, 0.6);
+
+  --font-inter: 'Inter', 'Noto Sans SC', sans-serif;
+  --font-ink: 'Noto Serif SC', 'Song Myung', 'STSong', 'SimSun', serif;
+  --font-noto-sc: 'Noto Sans SC', sans-serif;
+  --font-noto-jp: 'Noto Sans JP', sans-serif;
 }
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  font-family: var(--font-inter);
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(160,140,110,0.08) 3px, rgba(160,140,110,0.08) 6px),
+    linear-gradient(180deg, rgba(120,100,70,0.3) 0%, rgba(235,215,185,0.05) 25%, rgba(248,238,218,0.05) 75%, rgba(120,100,70,0.3) 100%),
+    linear-gradient(90deg, rgba(120,100,70,0.35) 0%, transparent 6%, transparent 94%, rgba(120,100,70,0.35) 100%),
+    #E8D9BE;
+  overflow-x: hidden;
 }
 
-.app-shell {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 48px 24px 64px;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.hero {
-  margin-bottom: 32px;
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
 }
 
-.eyebrow {
-  margin: 0 0 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  color: #4a6585;
-}
-
-h1,
-h2,
-p {
-  margin-top: 0;
-}
-
-h1 {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  line-height: 1.05;
-  margin-bottom: 16px;
-}
-
-.lead {
-  max-width: 620px;
-  font-size: 1.1rem;
-  color: #475c74;
-}
-
-.content {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(110, 136, 171, 0.18);
-  border-radius: 24px;
-  padding: 28px;
-  box-shadow: 0 18px 60px rgba(42, 65, 89, 0.08);
-  backdrop-filter: blur(16px);
+img {
+  display: block;
+  max-width: 100%;
 }
