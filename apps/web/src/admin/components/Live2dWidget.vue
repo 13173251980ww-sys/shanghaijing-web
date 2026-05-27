@@ -99,7 +99,8 @@ watch(() => chatStore.currentEmotion, (emotion) => {
 onMounted(async () => {
   try {
     const PIXI = await import('pixi.js');
-    const { Live2DModel } = await import('pixi-live2d-display');
+    window.PIXI = PIXI;
+    const { Live2DModel } = await import('pixi-live2d-display/cubism2');
 
     app = new PIXI.Application({
       view: canvasRef.value,
