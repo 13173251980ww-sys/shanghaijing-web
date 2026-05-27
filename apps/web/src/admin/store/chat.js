@@ -52,7 +52,7 @@ export const useChatStore = defineStore('chat', {
       const controller = new AbortController();
       this._controller = controller;
 
-      const baseUrl = import.meta.env.VITE_NODE_API_BASE_URL || '';
+      const baseUrl = import.meta.env.VITE_NODE_API_BASE_URL || '/api';
       const token = localStorage.getItem('admin_token') || '';
 
       fetch(`${baseUrl}/admin/chat/stream`, {
