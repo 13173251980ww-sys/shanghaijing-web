@@ -15,6 +15,7 @@
       <router-link to="/" class="map-btn" title="回到地图">
         <img :src="mapIcon" alt="地图" />
       </router-link>
+      <span v-if="images.length > 1" class="keyhint">← → 切换画作</span>
     </div>
   </div>
 </template>
@@ -155,4 +156,17 @@ onUnmounted(() => {
 
 .map-btn:hover { transform: scale(1.05); }
 .map-btn img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+.keyhint {
+  position: absolute;
+  bottom: 2.8%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-ink);
+  font-size: 1.6cqi;
+  color: rgba(58, 47, 40, 0.18);
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  user-select: none;
+}
 </style>
