@@ -35,7 +35,7 @@ import { getPosts } from '@/services/api/blog.js';
 import { getFriends } from '@/services/api/friends.js';
 import { getMessages } from '@/services/api/messages.js';
 import { getProjects } from '@/services/api/projects.js';
-import { getApiDocs, getDbInfo } from '@/services/api/admin.js';
+import { getApiDocs, getDbInfo, getAiConfig } from '@/services/api/admin.js';
 
 const gallery = ref([]);
 const blogPosts = ref([]);
@@ -44,6 +44,7 @@ const messages = ref([]);
 const projects = ref([]);
 const apiEndpoints = ref([]);
 const dbTables = ref([]);
+const aiConfigured = ref(false);
 
 const cards = [
   { key: 'gallery', label: '画廊图片', path: '/admin/gallery', icon: '&#x25A1;', get count() { return gallery.value.length; } },
@@ -54,6 +55,7 @@ const cards = [
   { key: 'about', label: '关于我', path: '/admin/about', icon: '&#x263A;', get count() { return 1; } },
   { key: 'api', label: 'API 接口', path: '/admin/api-docs', icon: '&#x2139;', get count() { return apiEndpoints.value.length; } },
   { key: 'db', label: '数据库表', path: '/admin/database', icon: '&#x25A3;', get count() { return dbTables.value.length; } },
+  { key: 'ai', label: 'AI 配置', path: '/admin/ai-config', icon: '&#x2691;', get count() { return aiConfigured.value ? 1 : 0; } },
 ];
 
 function load() {
@@ -64,6 +66,7 @@ function load() {
   getProjects((res) => { projects.value = res.data; }, () => {});
   getApiDocs((res) => { apiEndpoints.value = res.data?.endpoints || []; }, () => {});
   getDbInfo((res) => { dbTables.value = res.data?.tables || []; }, () => {});
+  getAiConfig((res) => { aiConfigured.value = !!(res.data && res.data.deepseek_api_key); }, () => {});
 }
 
 function formatTime(iso) {

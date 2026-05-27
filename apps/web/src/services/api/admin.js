@@ -26,3 +26,11 @@ export function uploadImage(formData, success, fail) {
   });
 }
 
+export function getAiConfig(success, fail) {
+  nodeHttp.get('/admin/ai-config', {}, success, fail);
+}
+
+export function setAiConfig(key, value, success, fail) {
+  nodeHttp.put('/admin/ai-config', { key, value }, success, fail);
+}
+

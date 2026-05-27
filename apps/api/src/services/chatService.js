@@ -4,6 +4,7 @@
  */
 import { BadRequestError } from '../errors/AppError.js';
 import { getAffection, getAffectionLevel } from '../data/repositories/affection.js';
+import { getConfig } from '../data/repositories/aiConfig.js';
 
 const DEEPSEEK_BASE = 'https://api.deepseek.com/v1/chat/completions';
 
@@ -40,12 +41,12 @@ export async function* streamChat(message, sessionId, history = []) {
     throw new BadRequestError('CHAT_MESSAGE_REQUIRED');
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = getConfig('deepseek_api_key') || process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
     throw new BadRequestError('CHAT_LLM_ERROR');
   }
 
-  const model = process.env.CHAT_MODEL || 'deepseek-chat';
+  const model = getConfig('deepseek_model') || process.env.CHAT_MODEL || 'deepseek-chat';
 
   const { affection } = getAffection();
   const { title } = getAffectionLevel(affection);

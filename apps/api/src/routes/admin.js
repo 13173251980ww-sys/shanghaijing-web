@@ -3,6 +3,7 @@ import { generateToken, authMiddleware } from '../middlewares/auth.js';
 import { UnauthorizedError, errorCodeRegistry } from '../errors/AppError.js';
 import { getDb, getTableInfo } from '../data/db.js';
 import { addDailyAffection, getAffection, getAffectionLevel } from '../data/repositories/affection.js';
+import { getAllConfig, setConfig } from '../data/repositories/aiConfig.js';
 
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'shanhaijing2026';
@@ -59,6 +60,8 @@ router.get('/api-docs', authMiddleware, (_req, res) => {
 
     { method: 'POST', path: '/api/admin/chat/stream', auth: true, desc: 'AI 书灵对话（SSE 流式）', errors: ['A0001', 'B0004', 'C0002'] },
     { method: 'GET', path: '/api/admin/affection', auth: true, desc: '查询好感度', errors: ['A0001'] },
+    { method: 'GET', path: '/api/admin/ai-config', auth: true, desc: '获取 AI 配置（密钥脱敏）', errors: ['A0001'] },
+    { method: 'PUT', path: '/api/admin/ai-config', auth: true, desc: '更新 AI 配置', errors: ['A0001', 'B0001'] },
   ];
   res.json({ endpoints, errorCodes: errorCodeRegistry });
 });
@@ -87,6 +90,28 @@ router.get('/affection', authMiddleware, (_req, res) => {
   const { affection } = getAffection();
   const { level, title } = getAffectionLevel(affection);
   res.json({ affection, level, title });
+});
+
+router.get('/ai-config', authMiddleware, (_req, res) => {
+  const config = getAllConfig();
+  const masked = {};
+  for (const [k, v] of Object.entries(config)) {
+    if (k.includes('api_key') || k.includes('secret') || k.includes('token')) {
+      masked[k] = v ? v.slice(0, 4) + '****' + v.slice(-4) : '';
+    } else {
+      masked[k] = v;
+    }
+  }
+  res.json(masked);
+});
+
+router.put('/ai-config', authMiddleware, (req, res) => {
+  const { key, value } = req.body || {};
+  if (!key || value === undefined || value === null) {
+    return res.status(400).json({ code: 'B0001', message: 'key 和 value 不能为空' });
+  }
+  setConfig(key, value);
+  res.json({ ok: true, key });
 });
 
 export default router;

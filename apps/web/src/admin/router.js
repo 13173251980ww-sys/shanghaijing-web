@@ -22,6 +22,7 @@ const adminRoutes = [
       { path: 'projects', name: 'admin-projects', component: () => import('./views/AdminProjects.vue') },
       { path: 'api-docs', name: 'admin-api-docs', component: () => import('./views/AdminApiDocs.vue') },
       { path: 'database', name: 'admin-database', component: () => import('./views/AdminDatabase.vue') },
+      { path: 'ai-config', name: 'admin-ai-config', component: () => import('./views/AdminAiConfig.vue') },
     ],
   },
 ];
