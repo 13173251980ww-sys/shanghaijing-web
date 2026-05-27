@@ -64,3 +64,13 @@
 - 安装 `live2d-widget-model-wanko@1.0.5` 为本地依赖
 - 将模型文件（15 个）复制到 `apps/web/public/models/wanko/`
 - 将 `MODEL_URL` 改为 `/models/wanko/wanko.model.json`（本地路径 + 正确文件名）
+
+### 2026-05-27 (第二次): 模型仍然加载失败（缺少 Cubism 2 运行时）
+
+**原因**: `pixi-live2d-display` 渲染 Cubism 2 模型需要 `live2d.min.js` 运行时（提供 `window.Live2D`），且需要 `window.PIXI` 全局暴露。这两个都是缺失的。
+
+**修复**:
+- 下载 `live2d.min.js`（Cubism 2.1 运行时，129KB）到 `apps/web/public/`
+- 在 `index.html` 中添加 `<script src="/live2d.min.js">`（必须在 app module 之前加载）
+- `Live2dWidget.vue` 中添加 `window.PIXI = PIXI` 全局暴露
+- 导入改为 `pixi-live2d-display/cubism2`（专用 Cubism 2 构建，仅 40KB vs 完整版）
