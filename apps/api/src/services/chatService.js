@@ -3,6 +3,7 @@
  * 注：本文件使用 async generator，是项目中唯一使用 async 的地方（SSE 流式传输需要）
  */
 import { BadRequestError } from '../errors/AppError.js';
+import { getAffection, getAffectionLevel } from '../data/repositories/affection.js';
 
 const DEEPSEEK_BASE = 'https://api.deepseek.com/v1/chat/completions';
 
@@ -46,10 +47,14 @@ export async function* streamChat(message, sessionId) {
 
   const model = process.env.CHAT_MODEL || 'deepseek-chat';
 
+  const { affection } = getAffection();
+  const { title } = getAffectionLevel(affection);
+  const affectionPrompt = `\n当前好感度：你与来客的好感度为「${title}」（${affection}点）。请根据好感度调整语气亲疏。`;
+
   const body = {
     model,
     messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: SYSTEM_PROMPT + affectionPrompt },
       { role: 'user', content: message },
     ],
     stream: true,

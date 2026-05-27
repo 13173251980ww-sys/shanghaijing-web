@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { generateToken, authMiddleware } from '../middlewares/auth.js';
 import { UnauthorizedError, errorCodeRegistry } from '../errors/AppError.js';
 import { getDb, getTableInfo } from '../data/db.js';
+import { addDailyAffection, getAffection, getAffectionLevel } from '../data/repositories/affection.js';
 
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'shanhaijing2026';
@@ -13,7 +14,8 @@ router.post('/login', (req, res) => {
   if (username !== ADMIN_USER || password !== ADMIN_PASS) {
     throw new UnauthorizedError('INVALID_CREDENTIALS');
   }
-  res.json({ token: generateToken() });
+  const affectionResult = addDailyAffection();
+  res.json({ token: generateToken(), affection: affectionResult });
 });
 
 router.get('/api-docs', authMiddleware, (_req, res) => {
@@ -76,6 +78,12 @@ router.get('/db-query/:table', authMiddleware, (req, res) => {
   const rows = getDb().prepare(`SELECT * FROM "${table}"`).all();
   const columns = getDb().prepare(`PRAGMA table_info("${table}")`).all().map((c) => c.name);
   res.json({ table, columns, rows, count: rows.length });
+});
+
+router.get('/affection', authMiddleware, (_req, res) => {
+  const { affection } = getAffection();
+  const { level, title } = getAffectionLevel(affection);
+  res.json({ affection, level, title });
 });
 
 export default router;

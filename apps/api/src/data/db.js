@@ -67,6 +67,12 @@ db.exec(`
     description TEXT NOT NULL,
     url TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS user_affection (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    affection INTEGER NOT NULL DEFAULT 0,
+    last_login_date TEXT NOT NULL DEFAULT ''
+  );
 `);
 
 export function getDb() {
