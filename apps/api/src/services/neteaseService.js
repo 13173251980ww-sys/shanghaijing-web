@@ -1,7 +1,9 @@
-import {
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const {
   login_qr_key, login_qr_check, login_status,
   user_playlist, playlist_track_all, likelist, song_detail,
-} from 'NeteaseCloudMusicApi';
+} = require('NeteaseCloudMusicApi');
 import { getConfig, setConfig } from '../data/repositories/aiConfig.js';
 import { addMusic } from '../data/repositories/music.js';
 import { getDb } from '../data/db.js';
