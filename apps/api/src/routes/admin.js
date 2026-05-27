@@ -62,6 +62,11 @@ router.get('/api-docs', authMiddleware, (_req, res) => {
     { method: 'GET', path: '/api/admin/affection', auth: true, desc: '查询好感度', errors: ['A0001'] },
     { method: 'GET', path: '/api/admin/ai-config', auth: true, desc: '获取 AI 配置（密钥脱敏）', errors: ['A0001'] },
     { method: 'PUT', path: '/api/admin/ai-config', auth: true, desc: '更新 AI 配置', errors: ['A0001', 'B0001'] },
+
+    { method: 'GET', path: '/api/music', auth: false, desc: '获取音乐列表', errors: [] },
+    { method: 'POST', path: '/api/admin/music', auth: true, desc: '添加音乐', errors: ['A0001', 'B0001'] },
+    { method: 'PUT', path: '/api/admin/music/:id', auth: true, desc: '编辑音乐', errors: ['A0001', 'B0002'] },
+    { method: 'DELETE', path: '/api/admin/music/:id', auth: true, desc: '删除音乐', errors: ['A0001', 'B0002'] },
   ];
   res.json({ endpoints, errorCodes: errorCodeRegistry });
 });

@@ -9,6 +9,7 @@
     <Live2dWidget />
     <DialogueBox />
     <AffectionBar />
+    <MusicPlayer />
   </div>
 </template>
 
@@ -17,6 +18,7 @@ import AdminSidebar from './components/AdminSidebar.vue';
 import Live2dWidget from './components/Live2dWidget.vue';
 import DialogueBox from './components/DialogueBox.vue';
 import AffectionBar from './components/AffectionBar.vue';
+import MusicPlayer from '@/components/MusicPlayer.vue';
 </script>
 
 <style scoped>

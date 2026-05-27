@@ -1,5 +1,6 @@
 <template>
   <router-view />
+  <MusicPlayer />
   <CloudTransition ref="cloudRef" />
 </template>
 
@@ -7,6 +8,7 @@
 import { ref, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import CloudTransition from './components/CloudTransition.vue';
+import MusicPlayer from './components/MusicPlayer.vue';
 
 const router = useRouter();
 const cloudRef = ref(null);

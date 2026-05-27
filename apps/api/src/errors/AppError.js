@@ -13,6 +13,7 @@ export const ERRORS = {
   MISSING_FILENAME_URL:    { code: 'B0001', status: 400, label: '参数校验失败',         message: '缺少 filename 或 url' },
   TITLE_REQUIRED:          { code: 'B0001', status: 400, label: '参数校验失败',         message: '标题不能为空' },
   NAME_URL_REQUIRED:       { code: 'B0001', status: 400, label: '参数校验失败',         message: '名称和链接不能为空' },
+  MUSIC_TITLE_URL_REQUIRED:{ code: 'B0001', status: 400, label: '参数校验失败',         message: '歌曲名和音频地址不能为空' },
   NAME_DESC_URL_REQUIRED:  { code: 'B0001', status: 400, label: '参数校验失败',         message: '名称、描述和链接不能为空' },
   AUTHOR_CONTENT_REQUIRED: { code: 'B0001', status: 400, label: '参数校验失败',         message: '署名和内容不能为空' },
   IDS_ARRAY_REQUIRED:      { code: 'B0001', status: 400, label: '参数校验失败',         message: 'ids 需为数组' },
@@ -25,6 +26,7 @@ export const ERRORS = {
   FRIEND_NOT_FOUND:        { code: 'B0002', status: 404, label: '资源不存在',           message: '友链不存在' },
   MESSAGE_NOT_FOUND:       { code: 'B0002', status: 404, label: '资源不存在',           message: '留言不存在' },
   PROJECT_NOT_FOUND:       { code: 'B0002', status: 404, label: '资源不存在',           message: '项目不存在' },
+  MUSIC_NOT_FOUND:         { code: 'B0002', status: 404, label: '资源不存在',           message: '音乐不存在' },
 
   // ---- 文件上传 (B0003) ----
   INVALID_IMAGE_FILE:      { code: 'B0003', status: 400, label: '文件上传失败',         message: '请选择有效的图片文件' },

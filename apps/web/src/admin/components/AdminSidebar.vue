@@ -43,6 +43,7 @@ const navItems = [
   { key: 'admin-api-docs', label: 'API 文档', path: '/admin/api-docs', icon: '&#x2139;' },
   { key: 'admin-database', label: '数据库', path: '/admin/database', icon: '&#x25A3;' },
   { key: 'admin-ai-config', label: 'AI 配置', path: '/admin/ai-config', icon: '&#x2691;' },
+  { key: 'admin-music', label: '音乐', path: '/admin/music', icon: '&#x266A;' },
 ];
 
 function isActive(key) {
