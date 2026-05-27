@@ -29,8 +29,12 @@ export const ERRORS = {
   // ---- 文件上传 (B0003) ----
   INVALID_IMAGE_FILE:      { code: 'B0003', status: 400, label: '文件上传失败',         message: '请选择有效的图片文件' },
 
+  // ---- 聊天 (B0004) ----
+  CHAT_MESSAGE_REQUIRED:   { code: 'B0004', status: 400, label: '消息不能为空',         message: '消息不能为空' },
+
   // ---- 服务端 (C) ----
   INTERNAL:                { code: 'C0001', status: 500, label: '服务器内部错误',       message: '服务器内部错误' },
+  CHAT_LLM_ERROR:          { code: 'C0002', status: 502, label: 'AI 服务调用失败',      message: 'AI 服务暂时不可用，请稍后重试' },
 };
 
 /**
