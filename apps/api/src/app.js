@@ -11,6 +11,7 @@ import friendsRouter from './routes/friends.js';
 import messagesRouter from './routes/messages.js';
 import projectsRouter from './routes/projects.js';
 import uploadRouter from './routes/upload.js';
+import chatRouter from './routes/chat.js';
 import errorHandler from './middlewares/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -46,6 +47,7 @@ app.use('/api/messages', messagesRouter);
 app.use('/api/admin/messages', messagesRouter);
 app.use('/api/projects', projectsRouter);
 app.use('/api/admin/projects', projectsRouter);
+app.use('/api/admin/chat', chatRouter);
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'api' });
