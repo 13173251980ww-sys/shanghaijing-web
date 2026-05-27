@@ -51,5 +51,16 @@
 ## 部署注意
 
 - 需在 `.env` 中配置 `DEEPSEEK_API_KEY` 和 `CHAT_MODEL`
-- Live2D 模型从 CDN 加载，需服务器可访问 jsDelivr
+- ~~Live2D 模型从 CDN 加载，需服务器可访问 jsDelivr~~ **已修复**：模型文件本地化到 `apps/web/public/models/wanko/`，不再依赖 jsDelivr CDN（国内被墙）
 - 仅后台页面显示，前台不受影响
+
+## 问题修复
+
+### 2026-05-27: Live2D 模型加载失败（"书灵沉睡中"）
+
+**原因**: jsDelivr CDN 在国内被墙，`live2d-widget-model-wanko` 模型无法下载。同时原 URL 中文件名也有误（`wanko.model3.json` 应为 `wanko.model.json`，该模型是 Cubism 2 格式）。
+
+**修复**:
+- 安装 `live2d-widget-model-wanko@1.0.5` 为本地依赖
+- 将模型文件（15 个）复制到 `apps/web/public/models/wanko/`
+- 将 `MODEL_URL` 改为 `/models/wanko/wanko.model.json`（本地路径 + 正确文件名）
