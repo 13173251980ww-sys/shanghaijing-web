@@ -14,7 +14,7 @@
           <hr class="sidebar__rule" />
           <h3 class="sidebar__section-title">近期文章</h3>
           <ul class="sidebar__articles">
-            <li v-for="a in posts.slice(0, 6)" :key="a.id">
+            <li v-for="a in recentPosts" :key="a.id">
               <router-link :to="'/blog/' + a.id" class="sidebar__article-link">{{ a.title }}</router-link>
             </li>
           </ul>
@@ -22,28 +22,21 @@
         </div>
       </aside>
 
-      <div class="article-scroll">
-        <article v-for="a in posts" :key="a.id" class="blog-card">
-          <router-link :to="'/blog/' + a.id" class="blog-card__link">
-            <div class="blog-card__thumb">
-              <img
-                :src="a.coverUrl ? coverImg(a.coverUrl) : '/default-cover.jpg'"
-                class="blog-card__thumb-img"
-                alt=""
-                @error="onCoverError"
-              />
-            </div>
-            <div class="blog-card__body">
-              <h3 class="blog-card__title">{{ a.title }}</h3>
-              <p class="blog-card__desc">{{ a.desc }}</p>
-              <time class="blog-card__time">{{ a.date }}</time>
-            </div>
-          </router-link>
-        </article>
+      <div class="article-area">
+        <div v-if="loading" class="article-loading">载入中…</div>
+        <template v-else-if="post">
+          <div class="article-cover" v-if="post.coverUrl">
+            <img :src="coverImg(post.coverUrl)" class="article-cover__img" alt="" @error="onCoverError" />
+          </div>
+          <h1 class="article-title">{{ post.title }}</h1>
+          <time class="article-date">{{ post.date }}</time>
+          <div class="article-content" v-html="renderedContent" />
+        </template>
+        <div v-else class="article-empty">文章未找到</div>
       </div>
 
-      <router-link to="/" class="map-btn" title="回到地图">
-        <img :src="mapIcon" alt="地图" />
+      <router-link to="/blog" class="map-btn" title="回到博客列表">
+        <img :src="mapIcon" alt="博客列表" />
       </router-link>
     </div>
   </div>
@@ -51,12 +44,18 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { marked } from 'marked';
 import SiteHeader from '../components/SiteHeader.vue';
 import bg from '../../assets/images/blog-bg.png';
 import mapIcon from '../../assets/images/map-icon.png';
-import { getPosts, getSidebar } from '@/services/api/blog.js';
+import { getPost, getPosts, getSidebar } from '@/services/api/blog.js';
 
-const posts = ref([]);
+const route = useRoute();
+
+const post = ref(null);
+const recentPosts = ref([]);
+const loading = ref(true);
 const sidebar = reactive({ name: 'Amadeus', motto: '笔落惊风雨，诗成泣鬼神', avatarUrl: '', icp: '666666666666' });
 
 const avatarStyle = computed(() => {
@@ -65,6 +64,11 @@ const avatarStyle = computed(() => {
     return { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' };
   }
   return {};
+});
+
+const renderedContent = computed(() => {
+  if (!post.value || !post.value.content) return '';
+  return marked(post.value.content);
 });
 
 function coverImg(url) {
@@ -79,8 +83,16 @@ function onCoverError(e) {
 }
 
 onMounted(() => {
+  const id = route.params.id;
+  getPost(id,
+    (res) => {
+      post.value = res.data;
+      loading.value = false;
+    },
+    () => { loading.value = false; },
+  );
   getPosts(
-    (res) => { if (res.data && res.data.length) posts.value = res.data; },
+    (res) => { if (res.data && res.data.length) recentPosts.value = res.data.slice(0, 6); },
     () => {},
   );
   getSidebar(
@@ -124,6 +136,7 @@ onMounted(() => {
   z-index: 10;
 }
 
+/* ---- sidebar (shared with BlogView) ---- */
 .sidebar {
   position: absolute;
   left: 2.92%;
@@ -227,109 +240,117 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
-.article-scroll {
+/* ---- article area ---- */
+.article-area {
   position: absolute;
   left: 24.86%;
-  top: 60%;
+  top: 12%;
   width: 53%;
-  height: 37%;
+  height: 84%;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 3%;
   padding-right: 1.5%;
-  scroll-behavior: smooth;
 }
 
-.article-scroll::-webkit-scrollbar { width: 3px; }
-.article-scroll::-webkit-scrollbar-track { background: transparent; }
-.article-scroll::-webkit-scrollbar-thumb {
+.article-area::-webkit-scrollbar { width: 3px; }
+.article-area::-webkit-scrollbar-track { background: transparent; }
+.article-area::-webkit-scrollbar-thumb {
   background: rgba(58, 47, 40, 0.15);
   border-radius: 2px;
 }
 
-.blog-card { flex-shrink: 0; }
+.article-loading,
+.article-empty {
+  font-family: var(--font-ink);
+  font-size: 1.1cqi;
+  color: rgba(58, 47, 40, 0.4);
+  text-align: center;
+  padding: 15% 0;
+}
 
-.blog-card__link {
-  display: flex;
-  gap: 4%;
-  padding: 3.5% 4%;
-  background: rgba(245, 240, 232, 0.72);
-  border: 1px solid rgba(58, 47, 40, 0.1);
+.article-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
   border-radius: 6px;
-  text-decoration: none;
-  transition: border-color 0.35s ease, box-shadow 0.35s ease;
-  cursor: pointer;
-}
-
-.blog-card__link:hover {
-  border-color: rgba(196, 30, 30, 0.2);
-  box-shadow: 0 2px 12px rgba(58, 47, 40, 0.08);
-}
-
-.blog-card__thumb {
-  width: 8cqi;
-  aspect-ratio: 1;
-  flex-shrink: 0;
+  overflow: hidden;
+  margin-bottom: 3%;
   background: linear-gradient(135deg, #e8ddd0, #f0e8db);
   border: 1px solid rgba(58, 47, 40, 0.1);
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
 }
 
-.blog-card__thumb-img {
+.article-cover__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-
-.blog-card__body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3%;
-  min-width: 0;
-}
-
-.blog-card__title {
+.article-title {
   font-family: var(--font-ink);
-  font-size: 1.25cqi;
-  font-weight: 600;
+  font-size: 2.2cqi;
+  font-weight: 700;
   color: #3a2f28;
-  margin: 0;
-  line-height: 1;
-  letter-spacing: 0.04em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: color 0.35s ease;
+  margin: 0 0 1%;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
 }
 
-.blog-card__link:hover .blog-card__title { color: #C41E1E; }
-
-.blog-card__desc {
+.article-date {
+  display: block;
   font-family: var(--font-ink);
-  font-size: 0.9cqi;
-  color: rgba(58, 47, 40, 0.5);
-  margin: 0;
-  line-height: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.blog-card__time {
-  font-family: var(--font-ink);
-  font-size: 0.76cqi;
+  font-size: 0.83cqi;
   color: rgba(58, 47, 40, 0.35);
-  line-height: 1;
+  margin-bottom: 3%;
 }
 
+.article-content {
+  font-family: var(--font-ink);
+  font-size: 1.1cqi;
+  color: #3a2f28;
+  line-height: 1.9;
+  letter-spacing: 0.03em;
+  word-break: break-word;
+}
+
+.article-content :deep(h1) { font-size: 1.8cqi; font-weight: 700; margin: 4% 0 2%; }
+.article-content :deep(h2) { font-size: 1.5cqi; font-weight: 600; margin: 3.5% 0 1.5%; }
+.article-content :deep(h3) { font-size: 1.3cqi; font-weight: 600; margin: 3% 0 1.5%; }
+.article-content :deep(p) { margin: 0 0 2%; }
+.article-content :deep(ul), .article-content :deep(ol) { margin: 0 0 2%; padding-left: 1.5em; }
+.article-content :deep(li) { margin-bottom: 0.5%; }
+.article-content :deep(blockquote) {
+  margin: 2% 0;
+  padding: 2% 3%;
+  border-left: 3px solid rgba(196, 30, 30, 0.3);
+  background: rgba(245, 240, 232, 0.5);
+  color: rgba(58, 47, 40, 0.65);
+  font-style: italic;
+}
+.article-content :deep(code) {
+  background: rgba(58, 47, 40, 0.06);
+  padding: 0.1em 0.4em;
+  border-radius: 2px;
+  font-size: 0.9em;
+}
+.article-content :deep(pre) {
+  background: rgba(58, 47, 40, 0.06);
+  padding: 3%;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 2% 0;
+}
+.article-content :deep(pre code) { background: none; padding: 0; }
+.article-content :deep(img) {
+  max-width: 100%;
+  border-radius: 4px;
+  margin: 2% 0;
+}
+.article-content :deep(hr) {
+  border: 0;
+  height: 1px;
+  margin: 3% 0;
+  background: linear-gradient(90deg, transparent, rgba(58,47,40,0.12) 30%, rgba(58,47,40,0.12) 70%, transparent);
+}
+
+/* ---- map button ---- */
 .map-btn {
   position: absolute;
   right: 3.19%;

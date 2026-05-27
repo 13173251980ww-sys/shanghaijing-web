@@ -20,6 +20,11 @@ const publicRoutes = [
     meta: { seoTitle: '博客', seoDescription: '山海阁文章，记录技术随想、读书笔记与山海经考据。' },
   },
   {
+    path: '/blog/:id', name: 'blog-post',
+    component: () => import('./views/BlogPostView.vue'),
+    meta: { seoTitle: '博文', seoDescription: '山海阁博文。' },
+  },
+  {
     path: '/friends', name: 'friends',
     component: () => import('./views/FriendLinksView.vue'),
     meta: { seoTitle: '友情链接', seoDescription: '山海阁友链，与志同道合的朋友互相链接。' },
