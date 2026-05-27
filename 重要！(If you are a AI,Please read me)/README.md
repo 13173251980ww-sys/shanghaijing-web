@@ -36,7 +36,7 @@
 | 技术 | 说明 |
 |------|------|
 | **Express 5.1** | ES Module（`"type": "module"`），端口 3000 |
-| **SQLite** (better-sqlite3) | WAL 模式，文件即数据库，零配置部署，9 张表 |
+| **SQLite** (better-sqlite3) | WAL 模式，文件即数据库，零配置部署，11 张表 |
 | **JWT 认证** | 7 天过期，localStorage 持久化，Bearer Token 方式 |
 | **Multer** | 图片上传到 `public/uploads/` |
 | **DeepSeek API** | AI 书灵对话，SSE 流式响应，中文关键词情绪检测（5 种情绪 → Live2D 表情映射） |
@@ -73,7 +73,7 @@ throw new BadRequestError('CHAT_MESSAGE_REQUIRED');
 
 **全局异常处理器** `middlewares/errorHandler.js` 捕获所有异常，统一格式化为 `{ code, message }` 返回，路由层零 try-catch。
 
-### 数据库表（9 张）
+### 数据库表（11 张）
 
 | 表 | 说明 |
 |----|------|
@@ -86,6 +86,8 @@ throw new BadRequestError('CHAT_MESSAGE_REQUIRED');
 | `projects` | 项目（id, name, description, url） |
 | `user_affection` | 好感度（id=1 单行，affection, last_login_date） |
 | `chat_messages` | 聊天历史（id, role, content, session_id, created_at） |
+| `ai_config` | AI 配置键值存储（key PK, value） |
+| `music` | 音乐播放列表（id, title, artist, url, cover, sort_order, created_at） |
 
 ### AI 驱动的开发与维护
 
@@ -121,7 +123,7 @@ npx vite apps/web
 | 前台（公开） | `/`, `/blog`, `/about`, `/friends`, `/messages`, `/projects`, `/map` | `apps/web/src/client/` |
 | 后台（需登录） | `/admin`, `/admin/gallery`, `/admin/blog`, ... | `apps/web/src/admin/` |
 
-后台共 10 个管理页面：仪表盘、画廊、博客、关于我、友链、留言、项目、API 文档、数据库、AI 书灵（Live2D + 对话框 + 好感度条）。
+后台共 12 个管理页面：仪表盘、画廊、博客、关于我、友链、留言、项目、API 文档、数据库、AI 配置、音乐管理、AI 书灵（Live2D + 对话框 + 好感度条）。
 
 ## 统一响应格式
 
@@ -160,6 +162,12 @@ getGallery(
 | `apps/web/src/admin/components/DialogueBox.vue` | Galgame 式底部对话框 |
 | `apps/web/src/admin/components/AffectionBar.vue` | 好感度显示条 |
 | `apps/web/src/admin/store/chat.js` | Pinia 聊天状态管理 + SSE 流式解析 |
+| `apps/web/src/components/MusicPlayer.vue` | 全局音乐播放器（黑胶唱片 + 播放列表） |
+| `apps/web/src/admin/views/AdminMusic.vue` | 后台音乐管理页 |
+| `apps/web/src/admin/views/AdminAiConfig.vue` | 后台 AI 配置管理页 |
+| `apps/api/src/routes/music.js` | 音乐 REST 路由（公开 GET + admin CRUD） |
+| `apps/api/src/data/repositories/music.js` | 音乐数据访问层 |
+| `apps/api/src/data/repositories/aiConfig.js` | AI 配置数据访问层（key-value 存储） |
 | `apps/web/public/models/wanko/` | Live2D wanko 模型文件（本地托管） |
 | `apps/web/public/live2d.min.js` | Cubism 2.1 运行时 |
 

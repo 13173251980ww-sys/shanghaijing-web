@@ -24,6 +24,8 @@
 
 **AI 书灵**：后台配有 Live2D 看板娘"山海"——山海经守护书灵，支持 Galgame 视觉小说式 AI 对话，含好感度系统。
 
+**山海乐坊**：右上角黑胶唱片全局音乐播放器，前后台均可见，支持播放列表管理。
+
 ## 功能模块
 
 ### 前台（公开访问）
@@ -37,6 +39,7 @@
 | **留言板** | 访客留言提交与展示 |
 | **项目** | 个人项目作品展示 |
 | **山海图** | 交互式山海经异兽地图 |
+| **山海乐坊** | 全局音乐播放器（右上角黑胶唱片） |
 
 ### 后台（管理员登录）
 
@@ -51,6 +54,8 @@
 | **留言管理** | 留言查看与删除 |
 | **项目管理** | 个人项目增删改 |
 | **API 文档** | 在线接口文档，含错误码说明 |
+| **AI 配置管理** | DeepSeek API Key 与模型参数配置 |
+| **音乐管理** | "山海乐坊"播放列表增删改 |
 | **数据库管理** | SQLite 表结构与数据可视化浏览 |
 
 ## 技术栈
@@ -77,12 +82,12 @@ shanghaijing-web/
 │   ├── web/                    # Vue 3 前端
 │   │   ├── src/
 │   │   │   ├── client/         #   前台 SPA（7 个页面）
-│   │   │   ├── admin/          #   后台 SPA（10 个管理页）
+│   │   │   ├── admin/          #   后台 SPA（12 个管理页）
 │   │   │   │   ├── views/      #     管理页面
 │   │   │   │   ├── components/ #     Live2D / 对话框 / 好感度条
 │   │   │   │   ├── store/      #     Pinia（认证 + 聊天）
 │   │   │   │   └── router.js   #     后台路由 + 认证守卫
-│   │   │   ├── components/     #   共享组件
+│   │   │   ├── components/     #   共享组件（MusicPlayer 等）
 │   │   │   └── services/       #   HTTP 封装 + API 层
 │   │   ├── public/
 │   │   │   ├── models/wanko/   #   Live2D 模型文件（本地托管）
@@ -93,7 +98,7 @@ shanghaijing-web/
 │       │   ├── routes/         #   路由层（HTTP 参数提取）
 │       │   ├── services/       #   业务层（校验 + 逻辑 + chatService）
 │       │   ├── data/
-│       │   │   ├── db.js       #   SQLite 连接与建表（9 张表）
+│       │   │   ├── db.js       #   SQLite 连接与建表（11 张表）
 │       │   │   └── repositories/  # 数据访问层（含 affection + chat）
 │       │   ├── errors/         #   错误码字典（8 种错误码）+ 异常类
 │       │   └── middlewares/    #   JWT 认证 + 全局错误处理
@@ -139,6 +144,8 @@ routes/ ──调用──▶ services/ ──调用──▶ data/repositories/
 | `projects` | 项目作品 |
 | `user_affection` | 好感度（每日登录 +1） |
 | `chat_messages` | AI 聊天历史 |
+| `ai_config` | AI 配置（key-value 存储） |
+| `music` | 音乐播放列表 |
 
 ## 好感度系统
 
