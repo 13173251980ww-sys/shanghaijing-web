@@ -56,6 +56,9 @@ router.get('/api-docs', authMiddleware, (_req, res) => {
     { method: 'POST', path: '/api/admin/projects', auth: true, desc: '添加项目', errors: ['A0001', 'B0001'] },
     { method: 'PUT', path: '/api/admin/projects/:id', auth: true, desc: '编辑项目', errors: ['A0001', 'B0002'] },
     { method: 'DELETE', path: '/api/admin/projects/:id', auth: true, desc: '删除项目', errors: ['A0001', 'B0002'] },
+
+    { method: 'POST', path: '/api/admin/chat/stream', auth: true, desc: 'AI 书灵对话（SSE 流式）', errors: ['A0001', 'B0004', 'C0002'] },
+    { method: 'GET', path: '/api/admin/affection', auth: true, desc: '查询好感度', errors: ['A0001'] },
   ];
   res.json({ endpoints, errorCodes: errorCodeRegistry });
 });

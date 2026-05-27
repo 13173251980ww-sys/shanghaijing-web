@@ -88,7 +88,7 @@ const avatarStyle = computed(() => ({
 }));
 
 function imgUrl(url) {
-  return url.startsWith('http') ? url : 'http://localhost:3000' + url;
+  return url.startsWith('http') ? url : url;
 }
 
 function load() {

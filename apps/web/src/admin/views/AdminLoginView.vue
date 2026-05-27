@@ -61,7 +61,7 @@ function handleLogin() {
       router.push(redirect);
     })
     .catch((err) => {
-      error.value = (err && err.error) ? err.error : '登录失败，请重试';
+      error.value = (err && err.message) ? err.message : '登录失败，请重试';
     })
     .finally(() => {
       loading.value = false;
