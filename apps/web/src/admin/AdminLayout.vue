@@ -6,11 +6,17 @@
         <router-view />
       </div>
     </main>
+    <Live2dWidget />
+    <DialogueBox />
+    <AffectionBar />
   </div>
 </template>
 
 <script setup>
 import AdminSidebar from './components/AdminSidebar.vue';
+import Live2dWidget from './components/Live2dWidget.vue';
+import DialogueBox from './components/DialogueBox.vue';
+import AffectionBar from './components/AffectionBar.vue';
 </script>
 
 <style scoped>
