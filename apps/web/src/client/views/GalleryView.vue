@@ -159,14 +159,16 @@ onUnmounted(() => {
 
 .keyhint {
   position: absolute;
-  bottom: 2.8%;
+  bottom: 3.5%;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 6;
   font-family: var(--font-ink);
-  font-size: 1.6cqi;
-  color: rgba(58, 47, 40, 0.18);
-  letter-spacing: 0.08em;
+  font-size: 2cqi;
+  color: rgba(240, 230, 210, 0.45);
+  letter-spacing: 0.1em;
   pointer-events: none;
   user-select: none;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 </style>
