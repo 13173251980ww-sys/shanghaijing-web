@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { generateToken, authMiddleware } from '../middlewares/auth.js';
 import { UnauthorizedError, errorCodeRegistry } from '../errors/AppError.js';
+import { getDb, getTableInfo } from '../data/db.js';
 
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'shanhaijing2026';
@@ -19,6 +20,8 @@ router.get('/api-docs', authMiddleware, (_req, res) => {
   const endpoints = [
     { method: 'POST', path: '/api/admin/login', auth: false, desc: '管理员登录', errors: ['A0002'] },
     { method: 'GET', path: '/api/admin/check', auth: true, desc: '验证 token 有效性', errors: ['A0001'] },
+    { method: 'GET', path: '/api/admin/db-info', auth: true, desc: '获取数据库表结构与行数', errors: ['A0001'] },
+    { method: 'GET', path: '/api/admin/db-query/:table', auth: true, desc: '查询指定表全部数据', errors: ['A0001'] },
     { method: 'POST', path: '/api/admin/upload', auth: true, desc: '上传图片', errors: ['A0001', 'B0003'] },
 
     { method: 'GET', path: '/api/gallery', auth: false, desc: '获取画廊图片列表', errors: [] },
@@ -57,6 +60,22 @@ router.get('/api-docs', authMiddleware, (_req, res) => {
 
 router.get('/check', authMiddleware, (_req, res) => {
   res.json({ ok: true });
+});
+
+router.get('/db-info', authMiddleware, (_req, res) => {
+  const tables = getTableInfo();
+  res.json({ tables });
+});
+
+router.get('/db-query/:table', authMiddleware, (req, res) => {
+  const { table } = req.params;
+  const tables = getTableInfo().map((t) => t.name);
+  if (!tables.includes(table)) {
+    return res.status(400).json({ code: 'B0001', message: `表 "${table}" 不存在` });
+  }
+  const rows = getDb().prepare(`SELECT * FROM "${table}"`).all();
+  const columns = getDb().prepare(`PRAGMA table_info("${table}")`).all().map((c) => c.name);
+  res.json({ table, columns, rows, count: rows.length });
 });
 
 export default router;

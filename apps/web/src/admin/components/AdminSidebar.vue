@@ -41,6 +41,7 @@ const navItems = [
   { key: 'admin-messages', label: '留言', path: '/admin/messages', icon: '&#x2709;' },
   { key: 'admin-projects', label: '项目', path: '/admin/projects', icon: '&#x2699;' },
   { key: 'admin-api-docs', label: 'API 文档', path: '/admin/api-docs', icon: '&#x2139;' },
+  { key: 'admin-database', label: '数据库', path: '/admin/database', icon: '&#x25A3;' },
 ];
 
 function isActive(key) {

@@ -5,3 +5,8 @@ coverage
 .env
 .env.local
 npm-debug.log*
+.idea
+.claude
+apps/api/data/*.db
+apps/api/data/*.db-shm
+apps/api/data/*.db-wal
