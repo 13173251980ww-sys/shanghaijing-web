@@ -27,9 +27,26 @@ body {
   margin: 0;
   padding: 0;
   background:
-    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(160,140,110,0.08) 3px, rgba(160,140,110,0.08) 6px),
-    linear-gradient(180deg, rgba(120,100,70,0.3) 0%, rgba(235,215,185,0.05) 25%, rgba(248,238,218,0.05) 75%, rgba(120,100,70,0.3) 100%),
-    linear-gradient(90deg, rgba(120,100,70,0.35) 0%, transparent 6%, transparent 94%, rgba(120,100,70,0.35) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(160,140,110,0.07) 3px, rgba(160,140,110,0.07) 6px),
+    radial-gradient(ellipse 55% 42% at 18% 38%, rgba(175,145,115,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 48% 38% at 75% 25%, rgba(195,165,135,0.17) 0%, transparent 70%),
+    radial-gradient(ellipse 52% 45% at 35% 70%, rgba(160,130,100,0.20) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 48% at 80% 55%, rgba(180,155,125,0.15) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(100,80,50,0.28) 0%, transparent 15%, transparent 85%, rgba(100,80,50,0.28) 100%),
+    linear-gradient(90deg, rgba(100,80,50,0.32) 0%, transparent 8%, transparent 92%, rgba(100,80,50,0.32) 100%),
     #E8D9BE;
+  background-size:
+    100% 200px,
+    200% 200%, 180% 180%, 220% 220%, 180% 180%,
+    100% 100%, 100% 100%;
+  background-repeat:
+    repeat,
+    no-repeat, no-repeat, no-repeat, no-repeat,
+    no-repeat, no-repeat;
+  animation: scrollUnroll 20s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { animation: none; }
 }
 </style>
