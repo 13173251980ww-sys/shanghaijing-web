@@ -26,8 +26,12 @@
         <article v-for="a in posts" :key="a.id" class="blog-card">
           <a :href="a.url" class="blog-card__link">
             <div class="blog-card__thumb">
-              <img v-if="a.coverUrl" :src="coverImg(a.coverUrl)" class="blog-card__thumb-img" alt="" />
-              <span v-else class="blog-card__thumb-placeholder" aria-hidden="true">文</span>
+              <img
+                :src="a.coverUrl ? coverImg(a.coverUrl) : '/default-cover.jpg'"
+                class="blog-card__thumb-img"
+                alt=""
+                @error="onCoverError"
+              />
             </div>
             <div class="blog-card__body">
               <h3 class="blog-card__title">{{ a.title }}</h3>
@@ -66,6 +70,12 @@ const avatarStyle = computed(() => {
 function coverImg(url) {
   if (!url) return '';
   return url.startsWith('http') ? url : 'http://localhost:3000' + url;
+}
+
+function onCoverError(e) {
+  if (!e.target.src.endsWith('/default-cover.jpg')) {
+    e.target.src = '/default-cover.jpg';
+  }
 }
 
 onMounted(() => {
@@ -276,12 +286,6 @@ onMounted(() => {
   object-fit: cover;
 }
 
-.blog-card__thumb-placeholder {
-  font-family: var(--font-ink);
-  font-size: 2.5cqi;
-  color: rgba(58, 47, 40, 0.15);
-  line-height: 1;
-}
 
 .blog-card__body {
   flex: 1;
