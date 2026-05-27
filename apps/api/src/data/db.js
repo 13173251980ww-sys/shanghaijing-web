@@ -73,6 +73,14 @@ db.exec(`
     affection INTEGER NOT NULL DEFAULT 0,
     last_login_date TEXT NOT NULL DEFAULT ''
   );
+
+  CREATE TABLE IF NOT EXISTS chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+    content TEXT NOT NULL,
+    session_id TEXT NOT NULL DEFAULT 'default',
+    created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+  );
 `);
 
 export function getDb() {

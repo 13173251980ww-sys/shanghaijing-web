@@ -35,7 +35,7 @@ export function detectEmotion(text) {
   return 'neutral';
 }
 
-export async function* streamChat(message, sessionId) {
+export async function* streamChat(message, sessionId, history = []) {
   if (!message || !message.trim()) {
     throw new BadRequestError('CHAT_MESSAGE_REQUIRED');
   }
@@ -51,10 +51,13 @@ export async function* streamChat(message, sessionId) {
   const { title } = getAffectionLevel(affection);
   const affectionPrompt = `\n当前好感度：你与来客的好感度为「${title}」（${affection}点）。请根据好感度调整语气亲疏。`;
 
+  const historyMessages = history.map(m => ({ role: m.role, content: m.content }));
+
   const body = {
     model,
     messages: [
       { role: 'system', content: SYSTEM_PROMPT + affectionPrompt },
+      ...historyMessages,
       { role: 'user', content: message },
     ],
     stream: true,
