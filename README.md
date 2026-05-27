@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="apps/web/public/favicon.ico" width="80" alt="山海经" />
-</p>
 
 <h1 align="center">山海经</h1>
 
@@ -22,10 +19,6 @@
 **视觉设计**：Figma 原型 → AI 生图（水墨插画、卷轴背景）→ 前端还原，全链路在 AI 辅助下完成。
 
 **技术特色**：自研后端三层架构 + 自定义错误码体系 + 回调风格 HTTP 封装，零第三方 UI 库，纯手写 CSS 水墨风格。
-
-## 在线地址
-
-> 部署于阿里云轻量应用服务器（2核2G），宝塔 Linux 面板 + Nginx + PM2
 
 ## 功能模块
 
