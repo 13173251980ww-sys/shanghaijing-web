@@ -22,7 +22,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useChatStore } from '../store/chat.js';
 
-const MODEL_URL = 'https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model3.json';
+const MODEL_URL = '/models/wanko/wanko.model.json';
 
 const chatStore = useChatStore();
 
