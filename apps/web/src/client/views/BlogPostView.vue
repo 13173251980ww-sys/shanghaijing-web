@@ -325,19 +325,26 @@ onMounted(() => {
   font-style: italic;
 }
 .article-content :deep(code) {
-  background: rgba(58, 47, 40, 0.06);
-  padding: 0.1em 0.4em;
-  border-radius: 2px;
+  background: rgba(58, 47, 40, 0.12);
+  color: #2a1f18;
+  padding: 0.15em 0.5em;
+  border-radius: 3px;
   font-size: 0.9em;
 }
 .article-content :deep(pre) {
-  background: rgba(58, 47, 40, 0.06);
+  background: rgba(58, 47, 40, 0.85);
+  color: #e8ddd0;
   padding: 3%;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow-x: auto;
   margin: 2% 0;
 }
-.article-content :deep(pre code) { background: none; padding: 0; }
+.article-content :deep(pre code) {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: 0.85em;
+}
 .article-content :deep(img) {
   max-width: 100%;
   border-radius: 4px;
