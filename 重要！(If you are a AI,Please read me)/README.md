@@ -30,6 +30,7 @@
 | **PixiJS 6 + Live2D** | `pixi-live2d-display/cubism2` 渲染 wanko 模型，代码分割独立 chunk（~530KB） |
 | **SSE 流式** | `fetch() + ReadableStream` 递归 `.then()` 链，保持回调风格 |
 | **CSS Container Queries** | 弹性缩放适配不同桌面分辨率 |
+| **SEO 优化** | `useSEO` 组合式函数动态更新 title/meta/og，`robots.txt` + `sitemap.xml`，后台 `noindex` |
 
 ### 后端
 
@@ -170,6 +171,9 @@ getGallery(
 | `apps/api/src/data/repositories/aiConfig.js` | AI 配置数据访问层（key-value 存储） |
 | `apps/web/public/models/wanko/` | Live2D wanko 模型文件（本地托管） |
 | `apps/web/public/live2d.min.js` | Cubism 2.1 运行时 |
+| `apps/web/src/composables/useSEO.js` | SEO 动态标签管理（title/meta/og） |
+| `apps/web/public/robots.txt` | 爬虫规则（禁 /admin） |
+| `apps/web/public/sitemap.xml` | 站点地图（7 个前台页面） |
 
 ## 必备操作（每次任务后）
 

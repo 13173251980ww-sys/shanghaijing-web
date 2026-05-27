@@ -26,6 +26,8 @@
 
 **山海乐坊**：右上角黑胶唱片全局音乐播放器，前后台均可见，支持播放列表管理。
 
+**SEO 优化**：动态页面标题与 meta 描述、Open Graph 标签、sitemap.xml、robots.txt，后台禁索引。
+
 ## 功能模块
 
 ### 前台（公开访问）
@@ -63,6 +65,7 @@
 | 层 | 技术 | 说明 |
 |----|------|------|
 | 前端框架 | Vue 3 (Composition API) | 纯 JavaScript |
+| SEO | useSEO 组合式函数 + sitemap + robots.txt | 动态 title/meta/og，SPA 友好 |
 | 构建工具 | Vite 6 | npm workspace monorepo |
 | 后端框架 | Express 5.1 | ES Module |
 | 数据库 | SQLite (better-sqlite3) | WAL 模式，文件即数据库 |
