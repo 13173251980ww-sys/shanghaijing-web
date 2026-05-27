@@ -162,13 +162,16 @@ onUnmounted(() => {
   bottom: 3.5%;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 6;
+  z-index: 20;
   font-family: var(--font-ink);
   font-size: 2cqi;
-  color: rgba(240, 230, 210, 0.45);
+  color: rgba(240, 230, 210, 0.85);
   letter-spacing: 0.1em;
   pointer-events: none;
   user-select: none;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  background: rgba(58, 47, 40, 0.25);
+  padding: 0.6cqi 2cqi;
+  border-radius: 0.6cqi;
+  border: 1px solid rgba(240, 230, 210, 0.12);
 }
 </style>
