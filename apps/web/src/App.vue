@@ -9,16 +9,20 @@ import { ref, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import CloudTransition from './components/CloudTransition.vue';
 import MusicPlayer from './components/MusicPlayer.vue';
+import { useSEO } from './composables/useSEO.js';
 
 const router = useRouter();
 const cloudRef = ref(null);
+const seo = useSEO();
 
 router.beforeEach(async (to, from) => {
+  seo.apply(to);
   if (!from.name) return; // 首次加载不触发
   await cloudRef.value?.cover();
 });
 
-router.afterEach(async () => {
+router.afterEach(async (to) => {
+  seo.apply(to);
   await nextTick();
   await cloudRef.value?.reveal();
 });

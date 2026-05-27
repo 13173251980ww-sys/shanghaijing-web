@@ -11,7 +11,7 @@ const adminRoutes = [
   {
     path: '/admin',
     component: AdminLayout,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, seoNoIndex: true },
     children: [
       { path: '', name: 'admin-dashboard', component: () => import('./views/AdminDashboard.vue') },
       { path: 'gallery', name: 'admin-gallery', component: () => import('./views/AdminGallery.vue') },
