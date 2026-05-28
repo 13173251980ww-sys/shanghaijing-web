@@ -1,19 +1,26 @@
 <template>
+  <!-- 音乐播放器：悬浮唱片按钮 + 弹出式曲目列表面板 -->
   <div class="music-player" :class="{ 'music-player--open': isOpen, 'music-player--playing': isPlaying }">
+    <!-- 唱片样式的触发按钮，点击展开/收起播放列表 -->
     <button class="music-player__record" :title="isPlaying ? '暂停' : '播放'" @click="togglePanel">
       <span class="music-player__disc">
+        <!-- 唱片纹路装饰 -->
         <span class="music-player__disc-groove" />
+        <!-- 唱片中心标签，播放时旋转 -->
         <span class="music-player__disc-label">乐</span>
       </span>
     </button>
 
+    <!-- 播放列表面板，带进入/离开过渡动画 -->
     <transition name="panel">
       <div v-if="isOpen" class="music-player__panel">
+        <!-- 面板头部：标题 + 当前播放曲目 -->
         <div class="music-player__panel-header">
           <span class="music-player__panel-title">山海乐坊</span>
           <span v-if="current" class="music-player__now-playing">{{ current.title }} — {{ current.artist }}</span>
         </div>
 
+        <!-- 曲目列表 -->
         <div class="music-player__list">
           <div v-if="songs.length === 0" class="music-player__empty">曲库空空，等待知音添曲</div>
           <button
@@ -28,10 +35,12 @@
               <span class="music-player__song-title">{{ song.title }}</span>
               <span class="music-player__song-artist">{{ song.artist }}</span>
             </span>
+            <!-- 当前播放曲目显示音符动画 -->
             <span v-if="currentIndex === i && isPlaying" class="music-player__song-playing">♪</span>
           </button>
         </div>
 
+        <!-- 底部控制栏：上一首 / 播放暂停 / 下一首 -->
         <div class="music-player__controls">
           <button class="music-player__btn" title="上一首" @click="prev">&#x23EE;</button>
           <button class="music-player__btn music-player__btn--play" :title="isPlaying ? '暂停' : '播放'" @click="togglePlay">
@@ -43,16 +52,23 @@
       </div>
     </transition>
 
+    <!-- 隐藏的音频元素，用于实际播放控制 -->
     <audio ref="audioRef" @ended="onEnded" @error="onAudioError" />
   </div>
 </template>
 
 <script setup>
+// Vue 组合式 API 与音乐服务接口
 import { ref, computed, onMounted, watch } from 'vue';
 import { getMusic } from '@/services/api/music.js';
 
+// localStorage 键名，用于持久化播放状态
 const STORAGE_KEY = 'music_player_state';
 
+/**
+ * 获取歌曲的流媒体播放地址
+ * 网易云歌曲统一走服务端代理，避免 URL 过期；本地歌曲直接使用存储的 URL
+ */
 function streamUrl(song) {
   // NetEase songs always go through the stream proxy for fresh URLs
   if (song.netease_id || (song.url && (song.url.startsWith('netease://') || song.url.includes('music.126.net')))) {
@@ -61,6 +77,10 @@ function streamUrl(song) {
   return song.url;
 }
 
+/**
+ * 音频播放错误处理
+ * 如果直接 URL 播放失败（通常是因为网易云 URL 过期），自动切换到代理流重试
+ */
 function onAudioError() {
   const audio = audioRef.value;
   // If direct URL failed, retry through stream proxy (handles expired NetEase URLs)
@@ -80,18 +100,21 @@ function onAudioError() {
   isPlaying.value = false;
 }
 
-const isOpen = ref(false);
-const isPlaying = ref(false);
-const songs = ref([]);
-const currentIndex = ref(-1);
-const audioRef = ref(null);
-const hasError = ref(false);
+// ── 响应式状态 ──
+const isOpen = ref(false);        // 播放列表面板是否展开
+const isPlaying = ref(false);     // 是否正在播放
+const songs = ref([]);            // 曲目列表
+const currentIndex = ref(-1);     // 当前播放曲目的索引
+const audioRef = ref(null);       // <audio> 元素的模板引用
+const hasError = ref(false);      // 是否发生播放错误
 
+// 当前播放的歌曲对象（计算属性）
 const current = computed(() => {
   if (currentIndex.value < 0 || currentIndex.value >= songs.value.length) return null;
   return songs.value[currentIndex.value];
 });
 
+/** 保存播放状态到 localStorage（当前歌曲 ID + 播放进度） */
 function saveState() {
   const audio = audioRef.value;
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -100,6 +123,7 @@ function saveState() {
   }));
 }
 
+/** 从服务端加载曲目列表 */
 function load() {
   getMusic(
     (res) => {
@@ -110,6 +134,7 @@ function load() {
   );
 }
 
+/** 从 localStorage 恢复上次的播放状态 */
 function restoreState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -140,10 +165,14 @@ function restoreState() {
   }
 }
 
+// ── 用户交互 ──
+
+/** 切换播放列表面板的展开/收起 */
 function togglePanel() {
   isOpen.value = !isOpen.value;
 }
 
+/** 播放指定索引的歌曲，选中后自动收起面板 */
 function play(index) {
   hasError.value = false;
   const audio = audioRef.value;
@@ -161,6 +190,7 @@ function play(index) {
   });
 }
 
+/** 切换播放 / 暂停 */
 function togglePlay() {
   if (!current.value) return;
   const audio = audioRef.value;
@@ -178,23 +208,26 @@ function togglePlay() {
   saveState();
 }
 
+/** 切换到下一首（列表循环） */
 function next() {
   if (songs.value.length === 0) return;
   const nextIdx = (currentIndex.value + 1) % songs.value.length;
   play(nextIdx);
 }
 
+/** 切换到上一首（列表循环） */
 function prev() {
   if (songs.value.length === 0) return;
   const prevIdx = (currentIndex.value - 1 + songs.value.length) % songs.value.length;
   play(prevIdx);
 }
 
+/** 当前歌曲播放完毕后自动切换到下一首 */
 function onEnded() {
   next();
 }
 
-// Persist playback time periodically
+// 播放时每 3 秒自动保存播放进度
 let saveTimer = null;
 watch(isPlaying, (val) => {
   if (val) {
@@ -204,10 +237,17 @@ watch(isPlaying, (val) => {
   }
 });
 
+// 组件挂载后立即加载曲目列表
 onMounted(load);
 </script>
 
 <style scoped>
+/* ================================================
+   音乐播放器样式
+   悬浮唱片按钮 + 弹出面板，水墨风格配色
+   ================================================ */
+
+/* ── 播放器容器：右上角悬浮定位 ── */
 .music-player {
   position: fixed;
   top: 20px;
@@ -216,7 +256,7 @@ onMounted(load);
   font-family: var(--font-ink);
 }
 
-/* ── 唱片按钮 ── */
+/* ── 唱片按钮（触发入口）── */
 .music-player__record {
   width: 44px;
   height: 44px;
@@ -456,7 +496,7 @@ onMounted(load);
   color: #fff;
 }
 
-/* ── transition ── */
+/* ── 面板过渡动画：淡入 + 上滑 ── */
 .panel-enter-active,
 .panel-leave-active {
   transition: opacity 0.25s ease, transform 0.25s ease;
