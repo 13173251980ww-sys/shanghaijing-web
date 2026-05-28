@@ -16,6 +16,8 @@ export const useNeteaseStore = defineStore('netease', {
     currentSongs: [],
     selectedIds: new Set(),
     activeTab: 'liked',
+    currentPlaylistId: null,
+    importVersion: 0,
     showQrModal: false,
   }),
 
@@ -30,6 +32,8 @@ export const useNeteaseStore = defineStore('netease', {
           if (res.data && res.data.loggedIn) {
             this.isLoggedIn = res.data.loggedIn;
             this.profile = res.data.profile || null;
+            this.loadLikelist();
+            this.loadPlaylists();
           }
         },
         () => {},
@@ -130,6 +134,7 @@ export const useNeteaseStore = defineStore('netease', {
     browsePlaylist(id) {
       this.isLoading = true;
       this.activeTab = 'playlist';
+      this.currentPlaylistId = id;
       neteaseApi.getPlaylistSongs(id,
         (res) => {
           this.currentSongs = (res.data && res.data.songs) || [];
@@ -142,8 +147,10 @@ export const useNeteaseStore = defineStore('netease', {
 
     showLiked() {
       this.activeTab = 'liked';
+      this.currentPlaylistId = null;
       this.currentSongs = [];
       this.selectedIds = new Set();
+      if (this.likelistSongs.length === 0) this.loadLikelist();
     },
 
     toggleSong(id) {
@@ -172,6 +179,7 @@ export const useNeteaseStore = defineStore('netease', {
         () => {
           this.selectedIds = new Set();
           this.isLoading = false;
+          this.importVersion++;
           alert(`已导入 ${selected.length} 首歌曲`);
         },
         () => {

@@ -35,7 +35,7 @@ const currentIndex = ref(0);
 const currentImg = computed(() => {
   if (images.value.length === 0) return fallbackArt;
   const img = images.value[currentIndex.value];
-  return img.url.startsWith('http') ? img.url : 'http://localhost:3000' + img.url;
+  return img.url.startsWith('http') ? img.url : img.url;
 });
 
 function prev() {

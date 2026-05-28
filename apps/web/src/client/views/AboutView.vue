@@ -66,7 +66,7 @@ const info = reactive({
 
 const avatarStyle = computed(() => {
   if (info.avatarUrl) {
-    const url = info.avatarUrl.startsWith('http') ? info.avatarUrl : 'http://localhost:3000' + info.avatarUrl;
+    const url = info.avatarUrl.startsWith('http') ? info.avatarUrl : info.avatarUrl;
     return { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' };
   }
   return {};

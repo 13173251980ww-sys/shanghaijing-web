@@ -42,8 +42,10 @@ router.get('/playlist/:id/songs', authMiddleware, async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-router.post('/import', authMiddleware, (req, res) => {
-  res.json(neteaseService.importSongs((req.body || {}).songs || []));
+router.post('/import', authMiddleware, async (req, res, next) => {
+  try {
+    res.json(await neteaseService.importSongs((req.body || {}).songs || []));
+  } catch (err) { next(err); }
 });
 
 router.post('/logout', authMiddleware, (_req, res) => {

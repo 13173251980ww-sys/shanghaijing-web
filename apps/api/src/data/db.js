@@ -94,9 +94,12 @@ db.exec(`
     url TEXT NOT NULL DEFAULT '',
     cover TEXT NOT NULL DEFAULT '',
     sort_order INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT ''
+    created_at TEXT NOT NULL DEFAULT '',
+    netease_id TEXT NOT NULL DEFAULT ''
   );
 `);
+
+try { db.exec('ALTER TABLE music ADD COLUMN netease_id TEXT NOT NULL DEFAULT \'\''); } catch {}
 
 export function getDb() {
   return db;

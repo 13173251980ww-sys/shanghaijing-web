@@ -5,7 +5,7 @@ export function listMusic() {
   return getDb().prepare('SELECT * FROM music ORDER BY sort_order, created_at').all();
 }
 
-export function addMusic({ title, artist, url, cover, sortOrder }) {
+export function addMusic({ title, artist, url, cover, sortOrder, neteaseId }) {
   const item = {
     id: uuid(),
     title: title || '',
@@ -13,12 +13,13 @@ export function addMusic({ title, artist, url, cover, sortOrder }) {
     url: url || '',
     cover: cover || '',
     sort_order: sortOrder ?? 0,
+    netease_id: neteaseId || '',
     created_at: new Date().toISOString(),
   };
   getDb().prepare(`
-    INSERT INTO music (id, title, artist, url, cover, sort_order, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(item.id, item.title, item.artist, item.url, item.cover, item.sort_order, item.created_at);
+    INSERT INTO music (id, title, artist, url, cover, sort_order, netease_id, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(item.id, item.title, item.artist, item.url, item.cover, item.sort_order, item.netease_id, item.created_at);
   return item;
 }
 

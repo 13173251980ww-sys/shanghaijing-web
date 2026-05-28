@@ -17,12 +17,14 @@ const seo = useSEO();
 
 router.beforeEach(async (to, from) => {
   seo.apply(to);
-  if (!from.name) return; // 首次加载不触发
+  if (!from.name) return;
+  if (to.path.startsWith('/admin') || from.path.startsWith('/admin')) return;
   await cloudRef.value?.cover();
 });
 
-router.afterEach(async (to) => {
+router.afterEach(async (to, from) => {
   seo.apply(to);
+  if (to.path.startsWith('/admin') || from.path.startsWith('/admin')) return;
   await nextTick();
   await cloudRef.value?.reveal();
 });

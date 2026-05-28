@@ -10,7 +10,6 @@
     "dev:web": "npm run dev --workspace apps/web",
     "dev:api": "npm run dev --workspace apps/api",
     "build:web": "npm run build --workspace apps/web",
-    "build:api": "npm run build --workspace apps/api",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

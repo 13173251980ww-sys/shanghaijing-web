@@ -36,7 +36,7 @@
             v-for="pl in netease.playlists"
             :key="pl.id"
             class="netease-tabs__tab"
-            :class="{ 'netease-tabs__tab--active': netease.activeTab === 'playlist' && netease.currentSongs.length && netease.playlists.find(p => p.id === pl.id && netease.activeTab === 'playlist') }"
+            :class="{ 'netease-tabs__tab--active': netease.currentPlaylistId === pl.id }"
             :title="`${pl.name} (${pl.trackCount}首)`"
             @click="netease.browsePlaylist(pl.id)"
           >{{ pl.name }}</button>
@@ -139,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { getMusic, addMusic, updateMusic, deleteMusic } from '@/services/api/music.js';
 import { useNeteaseStore } from '@/admin/store/netease.js';
 
@@ -182,6 +182,7 @@ function handleDelete(id) {
   deleteMusic(id, () => load(), () => {});
 }
 
+watch(() => netease.importVersion, () => { load(); });
 onMounted(() => { load(); netease.checkStatus(); });
 onUnmounted(() => { netease.stopPolling(); });
 </script>

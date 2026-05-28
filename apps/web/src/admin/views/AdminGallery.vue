@@ -39,7 +39,7 @@ const pendingFile = ref(null);
 const uploading = ref(false);
 
 function imgUrl(url) {
-  return url.startsWith('http') ? url : 'http://localhost:3000' + url;
+  return url.startsWith('http') ? url : url;
 }
 
 function load() {

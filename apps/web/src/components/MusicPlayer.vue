@@ -43,13 +43,42 @@
       </div>
     </transition>
 
-    <audio ref="audioRef" :src="current ? current.url : ''" @ended="onEnded" @error="onAudioError" />
+    <audio ref="audioRef" @ended="onEnded" @error="onAudioError" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { getMusic } from '@/services/api/music.js';
+
+const STORAGE_KEY = 'music_player_state';
+
+function streamUrl(song) {
+  // NetEase songs always go through the stream proxy for fresh URLs
+  if (song.netease_id || (song.url && (song.url.startsWith('netease://') || song.url.includes('music.126.net')))) {
+    return `/api/music/${song.id}/stream`;
+  }
+  return song.url;
+}
+
+function onAudioError() {
+  const audio = audioRef.value;
+  // If direct URL failed, retry through stream proxy (handles expired NetEase URLs)
+  if (audio && audio.src && !audio.src.includes('/api/music/') && audio.src.startsWith('http')) {
+    const song = current.value;
+    if (song) {
+      audio.src = `/api/music/${song.id}/stream`;
+      audio.load();
+      audio.play().then(() => { isPlaying.value = true; hasError.value = false; }).catch(() => {
+        hasError.value = true;
+        isPlaying.value = false;
+      });
+      return;
+    }
+  }
+  hasError.value = true;
+  isPlaying.value = false;
+}
 
 const isOpen = ref(false);
 const isPlaying = ref(false);
@@ -63,11 +92,52 @@ const current = computed(() => {
   return songs.value[currentIndex.value];
 });
 
+function saveState() {
+  const audio = audioRef.value;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    songId: current.value ? current.value.id : '',
+    time: audio ? audio.currentTime : 0,
+  }));
+}
+
 function load() {
   getMusic(
-    (res) => { songs.value = res.data || []; },
+    (res) => {
+      songs.value = res.data || [];
+      restoreState();
+    },
     () => {},
   );
+}
+
+function restoreState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const state = JSON.parse(raw);
+    if (state.songId) {
+      const index = songs.value.findIndex((song) => song.id === state.songId);
+      if (index === -1) {
+        localStorage.removeItem(STORAGE_KEY);
+        return;
+      }
+
+      currentIndex.value = index;
+      const audio = audioRef.value;
+      if (audio && current.value) {
+        audio.src = streamUrl(current.value);
+        audio.load();
+        if (state.time) audio.currentTime = state.time;
+      }
+      return;
+    }
+
+    if (state.index >= 0 && state.index < songs.value.length) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+  }
 }
 
 function togglePanel() {
@@ -76,18 +146,16 @@ function togglePanel() {
 
 function play(index) {
   hasError.value = false;
-  currentIndex.value = index;
-  isOpen.value = false;
-  nextTickPlay();
-}
-
-function nextTickPlay() {
   const audio = audioRef.value;
+  currentIndex.value = index;
   if (!audio || !current.value) return;
+  isOpen.value = false;
+  audio.src = streamUrl(current.value);
   audio.load();
   audio.play().then(() => {
     isPlaying.value = true;
     hasError.value = false;
+    saveState();
   }).catch(() => {
     hasError.value = true;
   });
@@ -107,6 +175,7 @@ function togglePlay() {
       hasError.value = true;
     });
   }
+  saveState();
 }
 
 function next() {
@@ -125,10 +194,15 @@ function onEnded() {
   next();
 }
 
-function onAudioError() {
-  hasError.value = true;
-  isPlaying.value = false;
-}
+// Persist playback time periodically
+let saveTimer = null;
+watch(isPlaying, (val) => {
+  if (val) {
+    saveTimer = setInterval(saveState, 3000);
+  } else {
+    if (saveTimer) { clearInterval(saveTimer); saveTimer = null; }
+  }
+});
 
 onMounted(load);
 </script>

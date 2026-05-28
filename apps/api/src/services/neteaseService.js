@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
   login_qr_key, login_qr_check, login_status,
-  user_playlist, playlist_track_all, likelist, song_detail,
+  user_playlist, playlist_track_all, likelist, song_detail, song_url,
 } = require('NeteaseCloudMusicApi');
 import { getConfig, setConfig } from '../data/repositories/aiConfig.js';
 import { addMusic } from '../data/repositories/music.js';
@@ -96,6 +96,10 @@ export async function getLikelist() {
     const { body: stBody } = await login_status({ cookie });
     const uid = stBody.data.profile.userId;
     const { body } = await likelist({ uid, cookie });
+    if (body.code && body.code !== 200) {
+      console.error('[netease] likelist error, code:', body.code, 'msg:', body.msg || body.message);
+      return { songs: [] };
+    }
     const ids = body.ids || [];
     if (ids.length === 0) return { songs: [] };
     // song_detail from NetEase API requires the function — use /song/detail endpoint
@@ -117,10 +121,11 @@ export async function getLikelist() {
   }
 }
 
-export function importSongs(songs) {
+export async function importSongs(songs) {
   if (!Array.isArray(songs) || songs.length === 0) {
     throw new BadRequestError('IDS_NON_EMPTY_ARRAY');
   }
+  const cookie = getCookie();
   let imported = 0;
   for (const s of songs) {
     if (!s.title) continue;
@@ -130,9 +135,15 @@ export function importSongs(songs) {
     if (existing) continue;
 
     let url = s.url || '';
-    // If a neteaseId is provided and no URL yet, store as reference
-    if (!url && s.neteaseId) {
-      url = `netease://${s.neteaseId}`;
+    const neteaseId = s.neteaseId || s.id;
+    if (!url && neteaseId) {
+      try {
+        const { body: urlBody } = await song_url({ id: neteaseId, cookie });
+        url = (urlBody.data && urlBody.data[0] && urlBody.data[0].url) || '';
+      } catch {
+        // fall through
+      }
+      if (!url) url = `netease://${neteaseId}`;
     }
 
     addMusic({
@@ -141,6 +152,7 @@ export function importSongs(songs) {
       url,
       cover: s.cover || '',
       sortOrder: imported,
+      neteaseId: neteaseId || '',
     });
     imported++;
   }
