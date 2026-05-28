@@ -21,6 +21,7 @@
 </template>
 
 <script setup>
+// 画廊页：神兽图鉴展示，水墨画风
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
 import bg from '../../assets/images/gallery-bg.png';

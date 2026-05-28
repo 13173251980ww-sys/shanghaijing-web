@@ -5,6 +5,7 @@
 </template>
 
 <script setup>
+// 根组件：路由视图 + 全局组件（音乐播放器、云层过渡动画）+ SEO
 import { ref, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import CloudTransition from './components/CloudTransition.vue';
@@ -15,13 +16,16 @@ const router = useRouter();
 const cloudRef = ref(null);
 const seo = useSEO();
 
+// 页面切换前：云层覆盖动画 + SEO 更新
 router.beforeEach(async (to, from) => {
   seo.apply(to);
   if (!from.name) return;
+  // 后台页面跳过云层动画
   if (to.path.startsWith('/admin') || from.path.startsWith('/admin')) return;
   await cloudRef.value?.cover();
 });
 
+// 页面切换后：云层揭开动画
 router.afterEach(async (to, from) => {
   seo.apply(to);
   if (to.path.startsWith('/admin') || from.path.startsWith('/admin')) return;

@@ -1,3 +1,4 @@
+// 管理后台 API：登录、认证、上传、数据库查询、AI 配置
 import { nodeHttp } from '@/services/http/http.js';
 
 export function login(data, success, fail) {

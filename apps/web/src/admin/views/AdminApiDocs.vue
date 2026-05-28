@@ -46,6 +46,7 @@
 </template>
 
 <script setup>
+// API 文档：接口列表 + 错误码展示
 import { ref, onMounted } from 'vue';
 import { getApiDocs } from '@/services/api/admin.js';
 

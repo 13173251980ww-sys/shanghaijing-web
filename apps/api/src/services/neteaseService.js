@@ -1,3 +1,4 @@
+// 网易云音乐服务：扫码登录、歌单/喜欢列表同步、歌曲导入
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
@@ -9,12 +10,14 @@ import { addMusic } from '../data/repositories/music.js';
 import { getDb } from '../data/db.js';
 import { BadRequestError, AppError } from '../errors/AppError.js';
 
+/** 获取存储的网易云 cookie，未登录则抛出异常 */
 function getCookie() {
   const cookie = getConfig('netease_cookie');
   if (!cookie) throw new BadRequestError('NETEASE_NOT_LOGGED_IN');
   return cookie;
 }
 
+/** 获取二维码登录 key 和二维码图片 URL */
 export async function getQrKey() {
   try {
     const { body } = await login_qr_key();
@@ -27,6 +30,7 @@ export async function getQrKey() {
   }
 }
 
+/** 轮询二维码扫描状态，code=803 表示登录成功 */
 export async function checkQrStatus(key) {
   try {
     const { body } = await login_qr_check({ key });
@@ -40,6 +44,7 @@ export async function checkQrStatus(key) {
   }
 }
 
+/** 获取当前登录状态与用户信息 */
 export async function getLoginStatus() {
   try {
     const cookie = getConfig('netease_cookie');
@@ -54,6 +59,7 @@ export async function getLoginStatus() {
   }
 }
 
+/** 获取用户的所有歌单 */
 export async function getUserPlaylists() {
   try {
     const cookie = getCookie();
@@ -70,6 +76,7 @@ export async function getUserPlaylists() {
   }
 }
 
+/** 获取指定歌单中的歌曲列表 */
 export async function getPlaylistSongs(playlistId) {
   try {
     const cookie = getCookie();
@@ -90,6 +97,7 @@ export async function getPlaylistSongs(playlistId) {
   }
 }
 
+/** 获取"我喜欢"歌单中的歌曲 */
 export async function getLikelist() {
   try {
     const cookie = getCookie();
@@ -102,7 +110,7 @@ export async function getLikelist() {
     }
     const ids = body.ids || [];
     if (ids.length === 0) return { songs: [] };
-    // song_detail from NetEase API requires the function — use /song/detail endpoint
+    // 通过 song_detail 批量获取歌曲详情
     const idStr = ids.join(',');
     const { body: detailBody } = await song_detail({ ids: idStr, cookie });
     const songs = (detailBody.songs || []).map(s => {
@@ -121,6 +129,7 @@ export async function getLikelist() {
   }
 }
 
+/** 将选中的网易云歌曲批量导入本地曲库，自动去重 */
 export async function importSongs(songs) {
   if (!Array.isArray(songs) || songs.length === 0) {
     throw new BadRequestError('IDS_NON_EMPTY_ARRAY');
@@ -129,6 +138,7 @@ export async function importSongs(songs) {
   let imported = 0;
   for (const s of songs) {
     if (!s.title) continue;
+    // 按歌名+歌手去重
     const existing = getDb().prepare(
       'SELECT id FROM music WHERE title = ? AND artist = ?'
     ).get(s.title, s.artist || '');
@@ -159,6 +169,7 @@ export async function importSongs(songs) {
   return { imported };
 }
 
+/** 清除网易云登录 cookie */
 export function clearCookie() {
   setConfig('netease_cookie', '');
   return { ok: true };

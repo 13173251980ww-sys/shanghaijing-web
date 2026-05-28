@@ -1,3 +1,4 @@
+// 前台公开路由：首页、画廊、关于、博客、友链、项目、留言
 const publicRoutes = [
   {
     path: '/', name: 'map',

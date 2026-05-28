@@ -25,6 +25,7 @@
 </template>
 
 <script setup>
+// 项目页：个人作品展示
 import { ref, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
 import bg from '../../assets/images/projects-bg.png';

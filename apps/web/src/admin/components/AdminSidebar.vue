@@ -25,6 +25,7 @@
 </template>
 
 <script setup>
+// 管理后台侧边导航：功能菜单 + 返回前台 + 退出登录
 import { useRoute, useRouter } from 'vue-router';
 import { useAdminStore } from '../store.js';
 

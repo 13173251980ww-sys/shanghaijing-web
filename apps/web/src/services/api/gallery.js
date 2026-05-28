@@ -1,3 +1,4 @@
+// 画廊 API：图片的增删排序
 import { nodeHttp } from '@/services/http/http.js';
 
 export function getGallery(success, fail) {

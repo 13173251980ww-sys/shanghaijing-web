@@ -1,3 +1,4 @@
+// 管理后台路由：登录页 + 各管理子页面（嵌套在 AdminLayout 内）
 import AdminLayout from './AdminLayout.vue';
 
 const TOKEN_KEY = 'admin_token';
@@ -28,6 +29,7 @@ const adminRoutes = [
   },
 ];
 
+/** 全局路由守卫：后台页面需验证 token，未登录跳转登录页 */
 export function adminGuard(to, _from, next) {
   if (to.meta.requiresAuth) {
     const token = localStorage.getItem(TOKEN_KEY);

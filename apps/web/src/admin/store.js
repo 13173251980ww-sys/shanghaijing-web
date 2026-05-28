@@ -1,3 +1,4 @@
+// 管理员 Pinia Store：token 管理、登录/退出、认证状态
 import { defineStore } from 'pinia';
 import { login as apiLogin, checkAuth as apiCheckAuth } from '@/services/api/admin.js';
 

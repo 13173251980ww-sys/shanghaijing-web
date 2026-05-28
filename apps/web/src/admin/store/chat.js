@@ -1,3 +1,4 @@
+// AI 书灵对话 Store：消息管理、SSE 流式通信、好感度
 import { defineStore } from 'pinia';
 import { nodeHttp } from '@/services/http/http.js';
 

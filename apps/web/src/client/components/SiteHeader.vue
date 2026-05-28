@@ -23,6 +23,7 @@
 </template>
 
 <script setup>
+// 网站顶栏导航组件：前台页面导航 + 后台入口
 import { useRouter } from 'vue-router';
 
 defineProps({
@@ -34,6 +35,7 @@ const router = useRouter();
 
 const TOKEN_KEY = 'admin_token';
 
+// 点击菜单按钮：已登录跳转后台，未登录跳转登录页
 function goAdmin() {
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) {

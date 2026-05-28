@@ -1,3 +1,4 @@
+// 画廊业务逻辑：参数校验与 CRUD 委托
 import { listImages, addImage, removeImage, reorderImages } from '../data/repositories/gallery.js';
 import { BadRequestError, NotFoundError } from '../errors/AppError.js';
 

@@ -29,6 +29,7 @@
 </template>
 
 <script setup>
+// 画廊管理：图片上传、排序、删除
 import { ref, onMounted } from 'vue';
 import { getGallery, addGallery, deleteGallery, reorderGallery } from '@/services/api/gallery.js';
 import { uploadImage } from '@/services/api/admin.js';

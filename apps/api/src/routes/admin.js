@@ -1,3 +1,4 @@
+// 管理后台路由：登录、token 验证、数据库查看、好感度、AI 配置、API 文档
 import { Router } from 'express';
 import { generateToken, authMiddleware } from '../middlewares/auth.js';
 import { UnauthorizedError, errorCodeRegistry } from '../errors/AppError.js';
@@ -5,11 +6,13 @@ import { getDb, getTableInfo } from '../data/db.js';
 import { addDailyAffection, getAffection, getAffectionLevel } from '../data/repositories/affection.js';
 import { getAllConfig, setConfig } from '../data/repositories/aiConfig.js';
 
+// 管理员账号，生产环境通过环境变量注入
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'shanhaijing2026';
 
 const router = Router();
 
+// 管理员登录：验证账号密码，返回 JWT token 和当日好感度加成
 router.post('/login', (req, res) => {
   const { username, password } = req.body || {};
   if (username !== ADMIN_USER || password !== ADMIN_PASS) {
@@ -19,6 +22,7 @@ router.post('/login', (req, res) => {
   res.json({ token: generateToken(), affection: affectionResult });
 });
 
+// 完整的 API 文档：列出所有端点及其认证要求、可能返回的错误码
 router.get('/api-docs', authMiddleware, (_req, res) => {
   const endpoints = [
     { method: 'POST', path: '/api/admin/login', auth: false, desc: '管理员登录', errors: ['A0002'] },
@@ -71,15 +75,18 @@ router.get('/api-docs', authMiddleware, (_req, res) => {
   res.json({ endpoints, errorCodes: errorCodeRegistry });
 });
 
+// 验证 token 有效性（前端用于判断是否已登录）
 router.get('/check', authMiddleware, (_req, res) => {
   res.json({ ok: true });
 });
 
+// 获取数据库表结构概览（供管理后台"数据库"页使用）
 router.get('/db-info', authMiddleware, (_req, res) => {
   const tables = getTableInfo();
   res.json({ tables });
 });
 
+// 查询指定表全部数据（供管理后台调试）
 router.get('/db-query/:table', authMiddleware, (req, res) => {
   const { table } = req.params;
   const tables = getTableInfo().map((t) => t.name);
@@ -91,12 +98,14 @@ router.get('/db-query/:table', authMiddleware, (req, res) => {
   res.json({ table, columns, rows, count: rows.length });
 });
 
+// 查询用户好感度
 router.get('/affection', authMiddleware, (_req, res) => {
   const { affection } = getAffection();
   const { level, title } = getAffectionLevel(affection);
   res.json({ affection, level, title });
 });
 
+// 获取 AI 配置（密钥字段脱敏显示）
 router.get('/ai-config', authMiddleware, (_req, res) => {
   const config = getAllConfig();
   const masked = {};
@@ -110,6 +119,7 @@ router.get('/ai-config', authMiddleware, (_req, res) => {
   res.json(masked);
 });
 
+// 更新 AI 配置的指定键值
 router.put('/ai-config', authMiddleware, (req, res) => {
   const { key, value } = req.body || {};
   if (!key || value === undefined || value === null) {

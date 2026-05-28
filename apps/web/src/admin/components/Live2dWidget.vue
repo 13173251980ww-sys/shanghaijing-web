@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+// Live2D 书灵组件：可拖拽、表情联动、点击互动
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useChatStore } from '../store/chat.js';
 

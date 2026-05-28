@@ -1,3 +1,4 @@
+// 音乐数据仓库：曲目记录的 CRUD
 import { v4 as uuid } from 'uuid';
 import { getDb } from '../db.js';
 
@@ -23,6 +24,7 @@ export function addMusic({ title, artist, url, cover, sortOrder, neteaseId }) {
   return item;
 }
 
+// 动态 SET 子句更新：仅更新传入的非 undefined 字段
 export function updateMusic(id, fields) {
   const existing = getDb().prepare('SELECT id FROM music WHERE id = ?').get(id);
   if (!existing) return null;

@@ -1,3 +1,4 @@
+// 留言数据仓库：留言的增删查
 import { v4 as uuid } from 'uuid';
 import { getDb } from '../db.js';
 

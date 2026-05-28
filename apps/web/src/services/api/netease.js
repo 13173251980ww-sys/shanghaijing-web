@@ -1,3 +1,4 @@
+// 网易云音乐 API：二维码登录、歌单/喜欢列表、歌曲导入
 import { nodeHttp } from '@/services/http/http.js';
 
 export function getQrKey(success, fail) {

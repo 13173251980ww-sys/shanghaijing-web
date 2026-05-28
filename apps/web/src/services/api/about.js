@@ -1,3 +1,4 @@
+// 关于页 API：个人信息的获取与更新
 import { nodeHttp } from '@/services/http/http.js';
 
 export function getAbout(success, fail) {

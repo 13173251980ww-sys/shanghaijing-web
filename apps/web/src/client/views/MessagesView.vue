@@ -53,6 +53,7 @@
 </template>
 
 <script setup>
+// 留言板页：留言列表展示与提交
 import { ref, computed, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
 import bg from '../../assets/images/messages-bg.png';

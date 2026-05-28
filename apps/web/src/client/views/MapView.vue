@@ -10,6 +10,7 @@
 </template>
 
 <script setup>
+// 首页：交互式山海经异兽地图
 import bg from '../../assets/images/map-bg.png';
 import yinglong from '../../assets/images/creature-yinglong.png';
 import baize from '../../assets/images/creature-baize.png';

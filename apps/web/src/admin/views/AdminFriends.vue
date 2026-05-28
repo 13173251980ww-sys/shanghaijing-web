@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+// 友链管理：友链的增删改
 import { ref, reactive, onMounted } from 'vue';
 import { getFriends, addFriend, updateFriend, deleteFriend } from '@/services/api/friends.js';
 

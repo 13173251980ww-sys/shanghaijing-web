@@ -50,6 +50,7 @@
 </template>
 
 <script setup>
+// 项目管理：项目的增删改
 import { ref, reactive, onMounted } from 'vue';
 import { getProjects, addProject, updateProject, deleteProject } from '@/services/api/projects.js';
 

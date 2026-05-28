@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+// 留言管理：查看与删除留言
 import { ref, onMounted } from 'vue';
 import { getMessages, deleteMessage } from '@/services/api/messages.js';
 

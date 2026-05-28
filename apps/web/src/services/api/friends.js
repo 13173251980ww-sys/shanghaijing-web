@@ -1,3 +1,4 @@
+// 友链 API：友情链接的增删改查
 import { nodeHttp } from '@/services/http/http.js';
 
 export function getFriends(success, fail) {

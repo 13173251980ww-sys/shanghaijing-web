@@ -70,6 +70,7 @@
 </template>
 
 <script setup>
+// 关于我管理：个人信息编辑与头像上传
 import { ref, reactive, computed, onMounted } from 'vue';
 import { getAbout, updateAbout } from '@/services/api/about.js';
 import { uploadImage } from '@/services/api/admin.js';

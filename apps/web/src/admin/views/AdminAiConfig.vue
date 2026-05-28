@@ -54,6 +54,7 @@
 </template>
 
 <script setup>
+// AI 配置：DeepSeek API 密钥与模型参数管理
 import { ref, reactive, computed, onMounted } from 'vue';
 import { getAiConfig, setAiConfig } from '@/services/api/admin.js';
 

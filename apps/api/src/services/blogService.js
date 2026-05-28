@@ -1,3 +1,4 @@
+// 博客业务逻辑：文章 CRUD、侧边栏管理，含参数校验
 import {
   listPosts, getPost, createPost, updatePost, deletePost, batchDeletePosts,
   getSidebar, updateSidebar,

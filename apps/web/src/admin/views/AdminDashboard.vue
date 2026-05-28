@@ -29,6 +29,7 @@
 </template>
 
 <script setup>
+// 仪表盘：各模块数据统计概览
 import { ref, onMounted } from 'vue';
 import { getGallery } from '@/services/api/gallery.js';
 import { getPosts } from '@/services/api/blog.js';

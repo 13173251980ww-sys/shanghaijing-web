@@ -1,3 +1,4 @@
+// 博客 API：文章列表/详情、发布/编辑/删除、侧边栏
 import { nodeHttp } from '@/services/http/http.js';
 
 export function getPosts(success, fail) {

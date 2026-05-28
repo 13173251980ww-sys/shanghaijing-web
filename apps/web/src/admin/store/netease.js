@@ -1,3 +1,4 @@
+// 网易云音乐 Store：登录态管理、歌单加载、歌曲选择与导入
 import { defineStore } from 'pinia';
 import * as neteaseApi from '@/services/api/netease.js';
 

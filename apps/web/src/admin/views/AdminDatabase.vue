@@ -53,6 +53,7 @@
 </template>
 
 <script setup>
+// 数据库管理：表结构查看与数据浏览
 import { ref, onMounted } from 'vue';
 import { getDbInfo, getDbTable } from '@/services/api/admin.js';
 

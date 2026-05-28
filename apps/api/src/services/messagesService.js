@@ -1,3 +1,4 @@
+// 留言业务逻辑：校验与 CRUD 委托
 import { listMessages, addMessage, removeMessage } from '../data/repositories/messages.js';
 import { BadRequestError, NotFoundError } from '../errors/AppError.js';
 

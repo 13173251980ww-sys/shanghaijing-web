@@ -1,3 +1,4 @@
+// 项目展示业务逻辑：校验与 CRUD 委托
 import { listProjects, addProject, updateProject, removeProject } from '../data/repositories/projects.js';
 import { BadRequestError, NotFoundError } from '../errors/AppError.js';
 

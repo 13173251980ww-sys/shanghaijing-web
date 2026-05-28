@@ -24,6 +24,7 @@
 </template>
 
 <script setup>
+// 友链页：友情链接展示
 import { ref, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
 import bg from '../../assets/images/friends-bg.png';

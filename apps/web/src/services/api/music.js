@@ -1,3 +1,4 @@
+// 音乐 API：曲目的增删改查
 import { nodeHttp } from '@/services/http/http.js';
 
 export function getMusic(success, fail) {

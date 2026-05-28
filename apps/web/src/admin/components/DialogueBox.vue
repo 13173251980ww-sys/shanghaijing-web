@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+// AI 书灵对话气泡：打字机效果、表情同步、好感度显示
 import { ref, computed, watch, nextTick } from 'vue';
 import { useChatStore } from '../store/chat.js';
 

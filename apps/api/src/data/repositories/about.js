@@ -1,5 +1,7 @@
+// 关于页数据仓库：个人信息单行记录的读写
 import { getDb } from '../db.js';
 
+// 映射数据库下划线字段为驼峰命名
 function aboutRow(r) {
   return {
     nickname: r.nickname, school: r.school,
@@ -13,6 +15,7 @@ export function getAbout() {
   return row ? aboutRow(row) : {};
 }
 
+// 使用 UPSERT 更新个人信息（单行记录，id 恒为 1）
 export function updateAbout(fields) {
   const current = getDb().prepare('SELECT * FROM about WHERE id = 1').get() || {};
   getDb().prepare(`

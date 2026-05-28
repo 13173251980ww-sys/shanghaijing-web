@@ -35,6 +35,7 @@
 </template>
 
 <script setup>
+// 管理员登录页：账号密码验证 + token 管理
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAdminStore } from '../store.js';

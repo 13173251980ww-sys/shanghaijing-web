@@ -1,3 +1,4 @@
+// 画廊数据仓库：SQLite 图片记录的增删改查与排序
 import { v4 as uuid } from 'uuid';
 import { getDb } from '../db.js';
 
@@ -21,6 +22,7 @@ export function removeImage(id) {
   return true;
 }
 
+// 按给定 ID 顺序重排图片
 export function reorderImages(ids) {
   const stmt = getDb().prepare('UPDATE gallery SET order_num = ? WHERE id = ?');
   getDb().transaction((idList) => {

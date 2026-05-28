@@ -1,3 +1,4 @@
+// 音乐业务逻辑：曲目 CRUD 与参数校验
 import { listMusic, addMusic, updateMusic, removeMusic } from '../data/repositories/music.js';
 import { BadRequestError, NotFoundError } from '../errors/AppError.js';
 

@@ -1,3 +1,4 @@
+// 项目数据仓库：项目记录的 CRUD
 import { v4 as uuid } from 'uuid';
 import { getDb } from '../db.js';
 

@@ -49,6 +49,7 @@
 </template>
 
 <script setup>
+// 关于我：个人信息展示页
 import { reactive, computed, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
 import bg from '../../assets/images/about-bg.png';

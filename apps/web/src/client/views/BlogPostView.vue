@@ -43,6 +43,7 @@
 </template>
 
 <script setup>
+// 博客详情页：Markdown 渲染、代码高亮
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { marked } from 'marked';

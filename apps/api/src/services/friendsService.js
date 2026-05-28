@@ -1,3 +1,4 @@
+// 友链业务逻辑：校验与 CRUD 委托
 import { listFriends, addFriend, updateFriend, removeFriend } from '../data/repositories/friends.js';
 import { BadRequestError, NotFoundError } from '../errors/AppError.js';
 

@@ -1,3 +1,4 @@
+// 友链数据仓库：友链记录的 CRUD
 import { v4 as uuid } from 'uuid';
 import { getDb } from '../db.js';
 

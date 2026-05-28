@@ -1,6 +1,8 @@
+// 博客数据仓库：文章、侧边栏的 SQLite CRUD
 import { v4 as uuid } from 'uuid';
 import { getDb } from '../db.js';
 
+// 将数据库行映射为驼峰命名的对象
 function postRow(r) {
   return {
     id: r.id, title: r.title, desc: r.description,
@@ -44,6 +46,7 @@ export function deletePost(id) {
   return true;
 }
 
+// 事务内批量删除文章
 export function batchDeletePosts(ids) {
   const stmt = getDb().prepare('DELETE FROM blog_posts WHERE id = ?');
   getDb().transaction((idList) => { for (const id of idList) stmt.run(id); })(ids);
@@ -55,6 +58,7 @@ export function getSidebar() {
   return row ? { name: row.name, motto: row.motto, avatarUrl: row.avatar_url, icp: row.icp } : {};
 }
 
+// 使用 UPSERT 更新侧边栏（单行记录，id 恒为 1）
 export function updateSidebar(fields) {
   const current = getDb().prepare('SELECT * FROM sidebar WHERE id = 1').get() || {};
   getDb().prepare(`

@@ -24,6 +24,7 @@
 </template>
 
 <script setup>
+// 好感度显示条：等级进度、+1 动画、距下一级天数
 import { ref, computed, onMounted } from 'vue';
 import { useChatStore } from '../store/chat.js';
 

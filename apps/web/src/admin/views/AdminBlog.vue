@@ -105,6 +105,7 @@
 </template>
 
 <script setup>
+// 博客管理：文章 CRUD、批量删除、侧边栏编辑
 import { ref, reactive, computed, onMounted } from 'vue';
 import { getPosts, createPost, updatePost, deletePost, batchDeletePosts, getSidebar, updateSidebar } from '@/services/api/blog.js';
 import { uploadImage } from '@/services/api/admin.js';

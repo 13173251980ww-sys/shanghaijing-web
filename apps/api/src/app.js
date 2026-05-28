@@ -1,9 +1,11 @@
+// Express 应用入口：挂载中间件、路由和统一错误处理
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// 路由模块
 import adminRouter from './routes/admin.js';
 import galleryRouter from './routes/gallery.js';
 import blogRouter from './routes/blog.js';
@@ -21,11 +23,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+// ── 全局中间件 ──
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// wrap all successful responses with { code: '00000', data: ... }
+// 统一包装成功响应：所有正常返回自动包裹 { code: '00000', data: ... }
 app.use((_req, res, next) => {
   const orig = res.json.bind(res);
   res.json = (body) => {
@@ -35,8 +38,10 @@ app.use((_req, res, next) => {
   next();
 });
 
+// 静态文件服务：上传目录
 app.use('/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
 
+// ── 路由挂载：每个模块同时挂载公开路由和管理后台路由 ──
 app.use('/api/admin', adminRouter);
 app.use('/api/admin/upload', uploadRouter);
 app.use('/api/gallery', galleryRouter);
@@ -56,10 +61,12 @@ app.use('/api/music', musicRouter);
 app.use('/api/admin/music', musicRouter);
 app.use('/api/admin/netease', neteaseRouter);
 
+// 健康检查端点
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'api' });
 });
 
+// 统一错误处理（必须放在所有路由之后）
 app.use(errorHandler);
 
 export default app;

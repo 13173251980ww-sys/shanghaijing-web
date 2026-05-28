@@ -139,6 +139,7 @@
 </template>
 
 <script setup>
+// 音乐管理：本地曲目 CRUD + 网易云音乐导入
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { getMusic, addMusic, updateMusic, deleteMusic } from '@/services/api/music.js';
 import { useNeteaseStore } from '@/admin/store/netease.js';

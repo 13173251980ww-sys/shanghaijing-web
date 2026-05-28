@@ -50,6 +50,7 @@
 </template>
 
 <script setup>
+// 博客列表页：文章列表 + 侧边栏
 import { ref, reactive, computed, onMounted } from 'vue';
 import SiteHeader from '../components/SiteHeader.vue';
 import bg from '../../assets/images/blog-bg.png';
